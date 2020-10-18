@@ -1,6 +1,7 @@
 window.onload = () => {
 	const filter_btn = document.getElementById('filter_btn');
 	const slideBar = document.getElementById('slideBar');
+	choiceBox.linkButton();
 	filter_btn.addEventListener('click', filterObj.openFilters);
 	filterObj.getMaterialsIds().forEach((e,i) => {
 		e = document.getElementById(e);
@@ -175,3 +176,39 @@ concat = () => {
 	document.getElementById("filter_info").innerHTML = 'Показано ' + (filterObj.itemsArray.length - res.length) + ' из ' + filterObj.itemsArray.length
 }
 
+const choiceBox = {
+	// nameField: document.getElementById("selected__facade__name"),
+	currentItemId: null,
+	currentAreaHeight: null,
+	correctAreaHeight: "100px",
+	currentName: null,
+	currentImgSrc: null,
+	linkButton() {
+		const links = document.getElementsByClassName("item__choice-button");
+		for (let item of links) {
+			item.addEventListener('click', choiceBox.action);
+		}
+	},
+	action(evt) {
+		choiceBox.showArea();
+		choiceBox.currentItemId = evt.target.parentElement.id;
+		choiceBox.currentName = evt.target.parentElement.getElementsByClassName("item__name")[0].innerHTML;
+		choiceBox.currentImgSrc = evt.target.parentElement.getElementsByClassName("item__img")[0].src;
+		choiceBox.currentAreaHeight = document.getElementById("select__area").style.height;
+
+		document.getElementById("selected__facade__name").innerHTML = choiceBox.currentName;
+		document.getElementById("selected__facade__img").src = choiceBox.currentImgSrc;
+		// console.log(choiceBox.currentItemId);
+
+	},
+	showArea() {
+		if (choiceBox.currentAreaHeight != choiceBox.correctAreaHeight) {
+			document.getElementById("select__area").style.height = choiceBox.correctAreaHeight;
+		}
+	}
+}
+
+function hide(){
+	document.getElementById("select__area").style.height = 0;
+	choiceBox.currentAreaHeight = document.getElementById("select__area").style.height;
+}

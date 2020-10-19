@@ -3,9 +3,9 @@ window.onload = () => {
 	const slideBar = document.getElementById('slideBar');
 	choiceBox.linkButton();
 	filter_btn.addEventListener('click', filterObj.openFilters);
-	filterObj.getMaterialsIds().forEach((e,i) => {
+	filterObj.getMaterialsIds().forEach((e, i) => {
 		e = document.getElementById(e);
-		e.addEventListener('click', function(event) {
+		e.addEventListener('click', function (event) {
 			let sortCovers = filterObj.getSortCovers()
 			if (event.target.checked === true) {
 				sortCovers[i].forEach(element => document.getElementById(element).checked = true);
@@ -16,61 +16,46 @@ window.onload = () => {
 	});
 }
 
-const filterObj = {
-//array of all items to filter==============================================
-	itemsArray: [
-		{ idFacade: 'resh_blue', idMaterial: 'mdf', idCover: 'pet' },
-		{ idFacade: 'resh_white', idMaterial: 'mdf', idCover: 'pet' },
-		{ idFacade: 'berlin', idMaterial: 'mdf', idCover: 'pvh' },
-		{ idFacade: 'megion', idMaterial: 'mdf', idCover: 'pvh' },
-		{ idFacade: 'asha_white', idMaterial: 'dsp', idCover: 'lak' },
-		{ idFacade: 'asha_green', idMaterial: 'dsp', idCover: 'lak' },
-		{ idFacade: 'asha_red', idMaterial: 'dsp', idCover: 'lak' },
-		{ idFacade: 'asha_beige', idMaterial: 'dsp', idCover: 'lak' },
-		{ idFacade: 'nordic', idMaterial: 'dsp', idCover: 'ldsp' },
-		{ idFacade: 'birsk', idMaterial: 'dsp', idCover: 'plastic' },
-		{ idFacade: 'fatezh', idMaterial: 'dsp', idCover: 'ldsp' },
-		{ idFacade: 'rouza', idMaterial: 'dsp', idCover: 'ldsp' },
-		{ idFacade: 'nevel', idMaterial: 'massive', idCover: 'paint' },
-		{ idFacade: 'newport_taupe', idMaterial: 'mdf', idCover: 'pvh' },
-		{ idFacade: 'newport_white', idMaterial: 'mdf', idCover: 'pvh' },
-		{ idFacade: 'oxford', idMaterial: 'mdf', idCover: 'pvh' },
-		{ idFacade: 'petergof', idMaterial: 'mdf', idCover: 'pvh' },
-		{ idFacade: 'plast', idMaterial: 'dsp', idCover: 'ldsp' },
-		{ idFacade: 'santiago', idMaterial: 'dsp', idCover: 'ldsp' },
-		{ idFacade: 'sofia', idMaterial: 'dsp', idCover: 'ldsp' },
-		{ idFacade: 'tomari', idMaterial: 'mdf', idCover: 'pvh' },
-	],
+class Filter {
+	//array of all items to filter==============================================
+	itemsArray
 
-	getMaterialsIds() {
+	constructor() {
+		fetch('http://localhost:3000/getItemsArray').then(res => res.json()).then(res => { 
+			this.itemsArray = res;
+			console.log(this.itemsArray);
+		});
+	}
+
+	getMaterialsIds= () => { 
 		const itemMaterial = [];
-		filterObj.itemsArray.forEach(e => {
+		this.itemsArray.forEach(e => {
 			if (!itemMaterial.includes(e.idMaterial)) {
 				itemMaterial.push(e.idMaterial);
 			}
 		});
 		return itemMaterial;
-	},
+	}
 
-	getCoversIds() {
+	getCoversIds= () => { 
 		const itemCovers = [];
-		filterObj.itemsArray.forEach(e => {
+		this.itemsArray.forEach(e => {
 			if (!itemCovers.includes(e.idCover)) {
 				itemCovers.push(e.idCover);
 			}
 		});
 		return itemCovers;
-	},
+	}
 
-	getSortCovers() {
-		const itemMaterial = filterObj.getMaterialsIds();//array of all materials
+	getSortCovers= () => { 
+		const itemMaterial = this.getMaterialsIds();//array of all materials
 		const sortCovers = [];
 
 		itemMaterial.forEach(eMat => {
 			const itemCover = [];
-			filterObj.itemsArray.forEach(eObj => {
-				if(eObj.idMaterial === eMat){
-					if (!itemCover.includes(eObj.idCover)){
+			this.itemsArray.forEach(eObj => {
+				if (eObj.idMaterial === eMat) {
+					if (!itemCover.includes(eObj.idCover)) {
 						itemCover.push(eObj.idCover);
 					}
 				}
@@ -78,78 +63,79 @@ const filterObj = {
 			sortCovers.push(itemCover);
 		})
 		return sortCovers;
-	},
+	}
 
-	openFilters() {
-		document.getElementById('filter_submit-btn').addEventListener('click', filterObj.submitFilters);
-		document.getElementById('filter_clear-btn').addEventListener('click', filterObj.clearFilters);
-		document.addEventListener('click', function(event) {
- 	 	const isClickInside = document.getElementById('facade__filter').contains(event.target);
- 	 	if (!isClickInside) {
- 		   	filterObj.sidebarHide();
- 	 		}
+	openFilters = () => {
+		document.getElementById('filter_submit-btn').addEventListener('click', this.submitFilters);
+		document.getElementById('filter_clear-btn').addEventListener('click', this.clearFilters);
+		document.addEventListener('click', event => {
+			const isClickInside = document.getElementById('facade__filter').contains(event.target);
+			if (!isClickInside) {
+				this.sidebarHide();
+			}
 		});
 
 		if (slideBar.style.height == '510px') {
-			filterObj.sidebarHide();
+			this.sidebarHide();
 		} else {
-			filterObj.sidebarShow();
+			this.sidebarShow();
 		}
-	},
+	}
 
-	submitFilters() {
-		const itemMaterial = filterObj.getMaterialsIds();//array of all materials
-		const itemCover = filterObj.getCoversIds();//array of all covers
-		filterObj.reloadFilter();
-		filterObj.filterCheckLoop(itemMaterial);
-		filterObj.filterCheckLoop(itemCover);
-		filterObj.sidebarHide();
+	submitFilters= () => { 
+		const itemMaterial = this.getMaterialsIds();//array of all materials
+		const itemCover = this.getCoversIds();//array of all covers
+		this.reloadFilter();
+		this.filterCheckLoop(itemMaterial);
+		this.filterCheckLoop(itemCover);
+		this.sidebarHide();
 		concat();
-// Finish the filter submition...
-	},
+		// Finish the filter submition...
+	}
 
-//reloads all items to default state
-	reloadFilter() {
-		filterObj.itemsArray.forEach(e => document.getElementById(e.idFacade).style.display = "flex");
-	},
+	//reloads all items to default state
+	reloadFilter= () => { 
+		this.itemsArray.forEach(e => document.getElementById(e.idFacade).style.display = "flex");
+	}
 
-	sidebarHide() {
+	sidebarHide= () => { 
 		slideBar.style.height = '50px';
 		filter_btn.className = 'filter__btn';
-	},
+	}
 
-	sidebarShow() {
+	sidebarShow= () => { 
 		slideBar.style.height = '510px';
 		filter_btn.className += '_after';
-	},
-	clearFilters() {
-		filterObj.itemsArray.forEach(e => {
+	}
+
+	clearFilters= () => { 
+		this.itemsArray.forEach(e => {
 			document.getElementById(e.idMaterial).checked = false;
 			document.getElementById(e.idCover).checked = false;
 		});
-		filterObj.submitFilters();
-	},
+		this.submitFilters();
+	}
 
-//creates array of CHECKED properties for items
-	filterCheckLoop(arr) {
+	//creates array of CHECKED properties for items
+	filterCheckLoop = (arr) => {
 		let checkbox;
 		let result = [];
 		arr.forEach(e => {
 			checkbox = document.getElementById(e)
-			if(checkbox.checked === true) {
+			if (checkbox.checked === true) {
 				result.push(e);
 			}
 		});
 		if (result.length > 0) {
-		result = arr.filter(x => result.includes(x));
-		// console.log(result);
-		return filterObj.filterAction(result);
-		} 
-	},
+			result = arr.filter(x => result.includes(x));
+			// console.log(result);
+			return this.filterAction(result);
+		}
+	}
 
-	filterAction(checkElements) {
+	filterAction = (checkElements) => {
 		const uncheckedItemsId = [];//there will be all unpleasant items
-		filterObj.itemsArray
+		this.itemsArray
 			.filter(e => !checkElements.includes(e.idMaterial) && !checkElements.includes(e.idCover))
 			.forEach(e => uncheckedItemsId.push(e.idFacade));
 		for (var i = 0; i < uncheckedItemsId.length; i++) {
@@ -160,6 +146,8 @@ const filterObj = {
 	}
 }
 
+const filterObj = new Filter();
+
 concat = () => {
 	const itemMaterial = filterObj.getMaterialsIds();//array of all materials
 	const itemCover = filterObj.getCoversIds();//array of all covers
@@ -167,9 +155,9 @@ concat = () => {
 	res = res.concat(filterObj.filterCheckLoop(itemMaterial));
 	res = res.concat(filterObj.filterCheckLoop(itemCover));
 	res = res.reduce((r, e) => {
-	if(r.includes(e) || e == undefined){
+		if (r.includes(e) || e == undefined) {
 			return r
-		}else{
+		} else {
 			return [...r, e]
 		}
 	}, []);
@@ -208,7 +196,7 @@ const choiceBox = {
 	}
 }
 
-function hide(){
+function hide() {
 	document.getElementById("select__area").style.height = 0;
 	choiceBox.currentAreaHeight = document.getElementById("select__area").style.height;
 }

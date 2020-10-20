@@ -3,17 +3,17 @@ window.onload = () => {
 	const slideBar = document.getElementById('slideBar');
 	choiceBox.linkButton();
 	filter_btn.addEventListener('click', filterObj.openFilters);
-	filterObj.getMaterialsIds().forEach((e, i) => {
-		e = document.getElementById(e);
-		e.addEventListener('click', function (event) {
-			let sortCovers = filterObj.getSortCovers()
-			if (event.target.checked === true) {
-				sortCovers[i].forEach(element => document.getElementById(element).checked = true);
-			} else {
-				sortCovers[i].forEach(element => document.getElementById(element).checked = false);
-			}
-		});
-	});
+	// filterObj.getMaterialsIds().forEach((e, i) => {
+	// 	e = document.getElementById(e);
+	// 	e.addEventListener('click', function (event) {
+	// 		let sortCovers = filterObj.getSortCovers()
+	// 		if (event.target.checked === true) {
+	// 			sortCovers[i].forEach(element => document.getElementById(element).checked = true);
+	// 		} else {
+	// 			sortCovers[i].forEach(element => document.getElementById(element).checked = false);
+	// 		}
+	// 	});
+	// });
 }
 
 class Filter {
@@ -24,10 +24,25 @@ class Filter {
 		fetch('http://localhost:3000/getItemsArray').then(res => res.json()).then(res => { 
 			this.itemsArray = res;
 			console.log(this.itemsArray);
+			this.setOfChecked();
 		});
 	}
 
-	getMaterialsIds= () => { 
+	setOfChecked = () => {
+		filterObj.getMaterialsIds().forEach((e, i) => {
+		e = document.getElementById(e);
+		e.addEventListener('click', function (event) {
+			let sortCovers = filterObj.getSortCovers()
+			if (event.target.checked === true) {
+				sortCovers[i].forEach(element => document.getElementById(element).checked = true);
+			} else {
+				sortCovers[i].forEach(element => document.getElementById(element).checked = false);
+			}
+			});
+		});
+	}
+
+	getMaterialsIds = () => { 
 		const itemMaterial = [];
 		this.itemsArray.forEach(e => {
 			if (!itemMaterial.includes(e.idMaterial)) {
@@ -37,7 +52,7 @@ class Filter {
 		return itemMaterial;
 	}
 
-	getCoversIds= () => { 
+	getCoversIds = () => { 
 		const itemCovers = [];
 		this.itemsArray.forEach(e => {
 			if (!itemCovers.includes(e.idCover)) {
@@ -47,7 +62,7 @@ class Filter {
 		return itemCovers;
 	}
 
-	getSortCovers= () => { 
+	getSortCovers = () => { 
 		const itemMaterial = this.getMaterialsIds();//array of all materials
 		const sortCovers = [];
 
@@ -82,33 +97,33 @@ class Filter {
 		}
 	}
 
-	submitFilters= () => { 
+	submitFilters = () => { 
 		const itemMaterial = this.getMaterialsIds();//array of all materials
 		const itemCover = this.getCoversIds();//array of all covers
 		this.reloadFilter();
 		this.filterCheckLoop(itemMaterial);
 		this.filterCheckLoop(itemCover);
 		this.sidebarHide();
-		concat();
+		showResult();
 		// Finish the filter submition...
 	}
 
 	//reloads all items to default state
-	reloadFilter= () => { 
+	reloadFilter = () => { 
 		this.itemsArray.forEach(e => document.getElementById(e.idFacade).style.display = "flex");
 	}
 
-	sidebarHide= () => { 
+	sidebarHide = () => { 
 		slideBar.style.height = '50px';
 		filter_btn.className = 'filter__btn';
 	}
 
-	sidebarShow= () => { 
+	sidebarShow = () => { 
 		slideBar.style.height = '510px';
 		filter_btn.className += '_after';
 	}
 
-	clearFilters= () => { 
+	clearFilters = () => { 
 		this.itemsArray.forEach(e => {
 			document.getElementById(e.idMaterial).checked = false;
 			document.getElementById(e.idCover).checked = false;
@@ -148,7 +163,8 @@ class Filter {
 
 const filterObj = new Filter();
 
-concat = () => {
+showResult = () => {
+	const resultField = document.getElementById("filter_info");
 	const itemMaterial = filterObj.getMaterialsIds();//array of all materials
 	const itemCover = filterObj.getCoversIds();//array of all covers
 	let res = [];
@@ -161,23 +177,29 @@ concat = () => {
 			return [...r, e]
 		}
 	}, []);
-	document.getElementById("filter_info").innerHTML = 'Показано ' + (filterObj.itemsArray.length - res.length) + ' из ' + filterObj.itemsArray.length
+	if (res.length > 0) {
+		resultField.innerHTML = 'Показано ' + (filterObj.itemsArray.length - res.length) + ' из ' + filterObj.itemsArray.length + '<a class="filter__info__clear-btn" id="filter__info__clear-btn"></a>';
+		document.getElementById('filter__info__clear-btn').addEventListener('click', filterObj.clearFilters);
+	} else resultField.innerHTML = "";
 }
 
 const choiceBox = {
-	// nameField: document.getElementById("selected__facade__name"),
+	area: document.getElementById("select__area"),
+	areaButton: document.getElementById("next__btn"),
 	currentItemId: null,
 	currentAreaHeight: null,
 	correctAreaHeight: "100px",
 	currentName: null,
 	currentImgSrc: null,
-	linkButton() {
+	linkButton(){
+		this.areaButton.addEventListener('click', showBox)
 		const links = document.getElementsByClassName("item__choice-button");
 		for (let item of links) {
-			item.addEventListener('click', choiceBox.action);
+			item.addEventListener('click', this.action);
 		}
 	},
-	action(evt) {
+	action(evt){
+		// console.log(this);
 		choiceBox.showArea();
 		choiceBox.currentItemId = evt.target.parentElement.id;
 		choiceBox.currentName = evt.target.parentElement.getElementsByClassName("item__name")[0].innerHTML;
@@ -186,12 +208,13 @@ const choiceBox = {
 
 		document.getElementById("selected__facade__name").innerHTML = choiceBox.currentName;
 		document.getElementById("selected__facade__img").src = choiceBox.currentImgSrc;
-		// console.log(choiceBox.currentItemId);
+		console.log(choiceBox.currentItemId);
 
 	},
-	showArea() {
-		if (choiceBox.currentAreaHeight != choiceBox.correctAreaHeight) {
-			document.getElementById("select__area").style.height = choiceBox.correctAreaHeight;
+	showArea(){
+		// console.log("show");
+		if (this.currentAreaHeight != this.correctAreaHeight) {
+			this.area.style.height = this.correctAreaHeight;
 		}
 	}
 }
@@ -199,4 +222,8 @@ const choiceBox = {
 function hide() {
 	document.getElementById("select__area").style.height = 0;
 	choiceBox.currentAreaHeight = document.getElementById("select__area").style.height;
+}
+
+function showBox(){
+	document.getElementById("result-box").style.height = "1500px";
 }

@@ -230,17 +230,52 @@ html {
 }
 
 .filter__info {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   position: absolute;
   top: 45px;
   width: 85%;
-  /*height: 0px;*/
-  /*height: 40px;*/
-  background-color: #42433E;
+  background-color: #484E5C;
   color: #f6f6f6;
   text-align: center;
-  /*padding: 12px;*/
   border-radius: 5px;
-  line-height: 40px;
+  line-height: 42px;
+  padding-top: 2px;
+}
+
+.filter__info__clear-btn {
+  position: relative;
+  display: inline-block;
+  color: #A9ACB1;
+  width: 20px;
+  height: 20px;
+  margin-left: 3px;
+  transition: all 0.3s ease 0s;
+}
+
+.filter__info__clear-btn:hover {
+  color: #CE4139;
+}
+
+.filter__info__clear-btn::after,
+.filter__info__clear-btn::before {
+  content: "";
+  display: block;
+  box-sizing: border-box;
+  position: absolute;
+  width: 15px;
+  height: 3px;
+  background: currentColor;
+  transform: rotate(45deg);
+  border-radius: 5px;
+  top: 8px;
+  left: 3px;
+}
+
+.filter__info__clear-btn::after {
+  transform: rotate(-45deg);
 }
 
 /* Facade Filter categories*/
@@ -381,6 +416,7 @@ html {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  margin-bottom: 100px;
 }
 
 .item__card {
@@ -520,6 +556,11 @@ html {
   width: 180px;
   text-align: center;
   line-height: 45px;
+}
+
+.result-box {
+  height: 0px;
+  width: 100%;
 }
 
 @media (max-width: 1182px) {

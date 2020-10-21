@@ -305,10 +305,30 @@
 					<img src="Assets/images/rouza_s.jpg"  width="250px" alt="" class="selected__facade__img" id="selected__facade__img">				
 				</div>
 			</div>
-			<a class="next__btn btn" href="#result-box" id="next__btn">Далее</a>
+			<a class="next__btn btn" href="#select__area" id="next__btn">Далее</a>
 		</div>
-		<div class="container result-box" id="result-box">
-			<div class=""></div>
+		<div class="container shape-box" id="shape-box">
+			<div class="section-header">
+				<h2>Выберите геометрию кухни:</h2>
+				<div class="geometry__cards-box">
+					<label for="geometry-line-shaped" class="radio-container line">Прямая
+						<input type="radio" id="geometry-line-shaped" name="shape" value="line">
+						<span class="radio-checkmark"></span>
+					</label>
+					<label for="geometry-l-shaped-left" class="radio-container ">Угловая левая
+						<input type="radio" id="geometry-l-shaped-left" name="shape" value="l-shaped-left">
+						<span class="radio-checkmark"></span>
+					</label>
+					<label for="geometry-l-shaped-right" class="radio-container">Угловая правая
+						<input type="radio" id="geometry-l-shaped-right" name="shape" value="l-shaped-right">
+						<span class="radio-checkmark"></span>
+					</label>
+					<label for="geometry-u-shaped" class="radio-container">П-образная
+						<input type="radio" id="geometry-u-shaped" name="shape" value="u-shaped">
+						<span class="radio-checkmark"></span>
+					</label>
+				</div>
+			</div>
 		</div>
 	</body>
 	<script src="js/script.min.js"></script>

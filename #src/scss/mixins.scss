@@ -5,6 +5,13 @@
 	-o-transition: all $time ease $delay;
 	transition: all $time ease $delay;
 }
+@mixin anim_some($target, $time, $delay) {
+	-webkit-transition: $target $time ease $delay;
+	-moz-transition: $target $time ease $delay;
+	-ms-transition: $target $time ease $delay;
+	-o-transition: $target $time ease $delay;
+	transition: $target $time ease $delay;
+}
 @mixin anim_cubic($time, $delay) {
 	-webkit-transition: all $time cubic-bezier(0.68, -0.55, 0.265, 1.55) $delay;
 	-moz-transition: all $time cubic-bezier(0.68, -0.55, 0.265, 1.55) $delay;

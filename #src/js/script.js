@@ -104,7 +104,7 @@ class Filter {
 		this.filterCheckLoop(itemMaterial);
 		this.filterCheckLoop(itemCover);
 		this.sidebarHide();
-		showResult();
+		this.showResult();
 		// Finish the filter submition...
 	}
 
@@ -159,29 +159,29 @@ class Filter {
 		// console.log(uncheckedItemsId);
 		return uncheckedItemsId;
 	}
+
+	showResult = () => {
+		const resultField = document.getElementById("filter_info");
+		const itemMaterial = this.getMaterialsIds();//array of all materials
+		const itemCover = this.getCoversIds();//array of all covers
+		let res = [];
+		res = res.concat(this.filterCheckLoop(itemMaterial)).concat(this.filterCheckLoop(itemCover));
+		res = res.reduce((r, e) => {
+			if (r.includes(e) || e == undefined) {
+				return r
+			} else {
+				return [...r, e]
+			}
+		}, []);
+		if (res.length > 0) {
+			resultField.innerHTML = 'Показано ' + (this.itemsArray.length - res.length) + ' из ' + this.itemsArray.length + '<a class="filter__info__clear-btn" id="filter__info__clear-btn"></a>';
+			document.getElementById('filter__info__clear-btn').addEventListener('click', this.clearFilters);
+		} else resultField.innerHTML = "";
+	}
 }
 
 const filterObj = new Filter();
 
-showResult = () => {
-	const resultField = document.getElementById("filter_info");
-	const itemMaterial = filterObj.getMaterialsIds();//array of all materials
-	const itemCover = filterObj.getCoversIds();//array of all covers
-	let res = [];
-	res = res.concat(filterObj.filterCheckLoop(itemMaterial));
-	res = res.concat(filterObj.filterCheckLoop(itemCover));
-	res = res.reduce((r, e) => {
-		if (r.includes(e) || e == undefined) {
-			return r
-		} else {
-			return [...r, e]
-		}
-	}, []);
-	if (res.length > 0) {
-		resultField.innerHTML = 'Показано ' + (filterObj.itemsArray.length - res.length) + ' из ' + filterObj.itemsArray.length + '<a class="filter__info__clear-btn" id="filter__info__clear-btn"></a>';
-		document.getElementById('filter__info__clear-btn').addEventListener('click', filterObj.clearFilters);
-	} else resultField.innerHTML = "";
-}
 
 const choiceBox = {
 	area: document.getElementById("select__area"),
@@ -219,11 +219,13 @@ const choiceBox = {
 	}
 }
 
+
+
 function hide() {
 	document.getElementById("select__area").style.height = 0;
 	choiceBox.currentAreaHeight = document.getElementById("select__area").style.height;
 }
 
 function showBox(){
-	document.getElementById("result-box").style.height = "1500px";
+	document.getElementById("shape-box").style.height = "800px";
 }

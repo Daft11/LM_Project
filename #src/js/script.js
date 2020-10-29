@@ -227,5 +227,6 @@ function hide() {
 }
 
 function showBox(){
-	document.getElementById("shape-box").style.height = "800px";
+	document.getElementById("shape-box").style.minHeight = "600px";
+	document.getElementById("shape-box").style.height = "100vh";
 }

@@ -23,7 +23,7 @@ class Filter {
 	constructor() {
 		fetch('http://localhost:3000/getItemsArray').then(res => res.json()).then(res => { 
 			this.itemsArray = res;
-			console.log(this.itemsArray);
+			// console.log(this.itemsArray);
 			this.setOfChecked();
 		});
 	}
@@ -192,7 +192,7 @@ const choiceBox = {
 	currentName: null,
 	currentImgSrc: null,
 	linkButton(){
-		this.areaButton.addEventListener('click', showBox)
+		this.areaButton.addEventListener('click', shapeBox.showBox)
 		const links = document.getElementsByClassName("item__choice-button");
 		for (let item of links) {
 			item.addEventListener('click', this.action);
@@ -226,7 +226,125 @@ function hide() {
 	choiceBox.currentAreaHeight = document.getElementById("select__area").style.height;
 }
 
-function showBox(){
-	document.getElementById("shape-box").style.minHeight = "600px";
-	document.getElementById("shape-box").style.height = "100vh";
+// function showBox(){
+// 	document.getElementById("shape-box").style.minHeight = "600px";
+// 	document.getElementById("shape-box").style.height = "100vh";
+// }
+
+const shapeBox = {
+	shape: "line",
+	firstSize: 0,
+	secondSize: 0,
+	thirdSize: 0,
+	shapeCardsIdArray: ["geometry-line-shaped", "geometry-l-shaped-left", "geometry-l-shaped-right", "geometry-u-shaped"],
+	sizeInputIdArray:["size-first", "size-second", "size-third"],
+	// sizeDisplay: document.getElementsByClassName("enter__size-display")[0],
+	sizeWall: document.getElementsByClassName("enter__size-display")[0].firstElementChild,
+	sizeWallDefaultClassName: "enter__size-wall",
+	inputVisibilitySet: {
+		line: [1, 0.2, 0.2, false, true, true],
+		lShapedLeft: [1, 1, 0.2, false, false, true],
+		lShapedRight: [1, 1, 0.2, false, false, true],
+		uShaped: [1, 1, 1, false, false, false]
+	},
+
+	switchShape(){
+		this.shapeCardsIdArray.forEach(e => {
+			document.getElementById(e).addEventListener("click", shapeBox.getShape.bind(shapeBox));
+		});
+	},
+
+
+
+	getShape(){
+		this.shapeCardsIdArray.forEach(e => {
+			if(document.getElementById(e).checked){
+
+				this.shape = document.getElementById(e).value;
+				this.sizeWall.className = this.sizeWallDefaultClassName;
+				this.sizeWall.className += e.slice(8);
+				// console.log(this.wallsModel.className);
+				this.inputShowSwitch(this.shape);
+			}
+		});
+	},
+
+	inputShowSwitch(shape) {
+		if(shape === "line"){
+			for (var i = 0; i < this.sizeInputIdArray.length; i++) {
+				document.getElementById(this.sizeInputIdArray[i]).style.opacity = this.inputVisibilitySet.line[i];
+				document.getElementById(this.sizeInputIdArray[i]).firstElementChild.disabled = this.inputVisibilitySet.line[i+3];
+			}
+				this.inputFocus();
+				return this.flashingWall(shape);
+		}
+		if(shape === "l-shaped-left"){
+			for (var i = 0; i < this.sizeInputIdArray.length; i++) {
+				document.getElementById(this.sizeInputIdArray[i]).style.opacity = this.inputVisibilitySet.lShapedLeft[i];
+				document.getElementById(this.sizeInputIdArray[i]).firstElementChild.disabled = this.inputVisibilitySet.lShapedLeft[i+3];
+			}
+				this.inputFocus(shape);
+				return this.flashingWall(shape);
+		}
+		if(shape === "l-shaped-right"){
+			for (var i = 0; i < this.sizeInputIdArray.length; i++) {
+				document.getElementById(this.sizeInputIdArray[i]).style.opacity = this.inputVisibilitySet.lShapedRight[i];
+				document.getElementById(this.sizeInputIdArray[i]).firstElementChild.disabled = this.inputVisibilitySet.lShapedRight[i+3];
+			}
+				this.inputFocus(shape);
+				return this.flashingWall(shape);
+		}
+		if(shape === "u-shaped"){
+			for (var i = 0; i < this.sizeInputIdArray.length; i++) {
+				document.getElementById(this.sizeInputIdArray[i]).style.opacity = this.inputVisibilitySet.uShaped[i];
+				document.getElementById(this.sizeInputIdArray[i]).firstElementChild.disabled = this.inputVisibilitySet.uShaped[i+3];
+			}
+				this.inputFocus(shape);
+				return this.flashingWall(shape);
+		}
+	},
+
+	showBox(){
+		document.getElementById("shape-box").style.minHeight = "600px";
+		document.getElementById("shape-box").style.height = "100vh";
+		shapeBox.getShape();
+		shapeBox.switchShape();
+		// shapeBox.inputShowSwitch();
+	},
+
+	inputFocus(){
+		const firstInput = document.getElementById(this.sizeInputIdArray[0]).firstElementChild
+		firstInput.focus();
+		firstInput.select();
+	},
+
+	flashingWall(className){
+		if (className === "l-shaped-left") {this.sizeWall.className += " anim-left-border" }
+		else if (className === "line") {this.sizeWall.className += " anim-top-border" }
+		else if (className === "l-shaped-right") {this.sizeWall.className += " anim-top-border" }	
+		else if (className === "u-shaped") {this.sizeWall.className += " anim-left-border" }
+	}
+}
+
+function onlyNumberKey(evt) { 
+        var iKeyCode = (evt.which) ? evt.which : evt.keyCode
+        if (iKeyCode > 31 && (iKeyCode < 48 || iKeyCode > 57))
+            return false;
+        return true;
+    } 
+
+function checkLength(len,ele){
+	var fieldLength = ele.value.length;
+	if(fieldLength <= len){return true;}
+	else {
+		var str = ele.value;
+		str = str.substring(0, str.length - 1);
+		ele.value = str;
+	}
+}
+
+const summaryProgress = {
+	// facade:
+	// 
+	// 
 }

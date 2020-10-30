@@ -330,16 +330,18 @@
 				</label>
 			</div>
 			<div class="enter__size-box">
-				<div class="enter__size-walls"></div>
+				<div class="enter__size-display">
+					<div class="enter__size-wall"></div>
+				</div>
 				<div class="enter__size-input-area">
-					<label for="size-first"> Введитe первый размер: 
-						<input type="number" id="size-first" min="1000" max="6000" value="2400" >
+					<label id="size-first"> Введитe первый размер: 
+						<input type="number" min="1000" max="6000" value="0" maxlength="4" onkeypress="return onlyNumberKey(event)" onInput="checkLength(4,this)">
 					</label>
-					<label for="size-second"> Введитe второй размер: 
-						<input type="number" id="size-second" min="1000" max="6000" value="2400" >
+					<label id="size-second"> Введитe второй размер: 
+						<input type="number" min="1000" max="6000" value="0" maxlength="4" onkeypress="return onlyNumberKey(event)" onInput="checkLength(4,this)">
 					</label>
-					<label for="size-third"> Введитe третий размер: 
-						<input type="number" id="size-third" min="1000" max="6000" value="2400" disabled>
+					<label id="size-third"> Введитe третий размер: 
+						<input type="number" min="1000" max="6000" value="0" maxlength="4" onkeypress="return onlyNumberKey(event)" onInput="checkLength(4,this)">
 					</label>
 				</div>
 			</div>

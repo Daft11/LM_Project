@@ -633,7 +633,21 @@ html {
 	// @include anim_some(border, 0.05s, 0s);
 }
 
-.enter__size-walls{
+
+.enter__size-box{
+	display: block;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	margin: auto;
+}
+
+.enter__size-display{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: relative;
 	margin: auto;
 	height: 299px;
 	width: 599px;
@@ -645,18 +659,9 @@ html {
 
 }
 
-.enter__size-box{
-	display: block;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	align-items: center;
-	margin: auto;
-}
-
 .enter__size-input-area{
 	align-self:flex-start;
-	width: 300px;
+	width: 290px;
 	bottom:0;
 	label{
 		display: block;
@@ -670,8 +675,8 @@ html {
 		float: right;
 		line-height: 1.6;
 		font-size: 1em;
-		width: 60px;
-		text-align: center;
+		width: 50px;
+		text-align: right;
 		background-color:inherit;
 
 		&:focus{
@@ -683,6 +688,54 @@ html {
 }
 @keyframes underlineBlinking { 50% { border-color: #fff; } }
 
+
+.enter__size-wall-line-shaped,
+.enter__size-wall-l-shaped-left,
+.enter__size-wall-l-shaped-right,
+.enter__size-wall-u-shaped {
+	position: absolute;
+	content: "";
+	display: block;
+	height: 205px;
+	margin-bottom: 4px;
+	width: 310px;
+	border: hidden 14px $colorgray;
+	&.anim-left-border{
+		animation: leftBorderLineBlinking 1.6s linear infinite;
+		@keyframes leftBorderLineBlinking { 50% { border-left-color: $lmgreencolor; } };
+	}
+	&.anim-top-border{
+		animation: topBorderLineBlinking 1.6s linear infinite;
+		@keyframes topBorderLineBlinking { 50% { border-top-color: $lmgreencolor; } };
+	}
+	&.anim-right-border{
+		animation: rightBorderLineBlinking 1.6s linear infinite;
+		@keyframes rightBorderLineBlinking { 50% { border-right-color: $lmgreencolor; } };
+	}
+}
+.enter__size-wall {
+	&-line-shaped {
+		margin-top: 90px;
+		border-top-style: solid;
+	}
+	&-l-shaped-left {
+		border-left-style: solid;
+		border-top-style: solid;
+	}
+	&-l-shaped-right {
+		border-top-style: solid;
+		border-right-style: solid;
+	}
+	&-u-shaped {
+		border-left-style: solid;
+		border-top-style: solid;
+		border-right-style: solid;
+	}
+}
+
+
+
+// something
 
 .baner{
 	// position: absolute;

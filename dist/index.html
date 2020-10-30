@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="stylesheet" href="css/style.min.css" />
+		<link
+			href="https://fonts.googleapis.com/css?family=Kaushan+Script|Montserrat:400,700,800|Roboto:300i,400&display=swap&subset=cyrillic-ext"
+			rel="stylesheet"
+		/>
+		<title>LM Project</title>
+	</head>
+	<body>
+		<header class="header">
+			<div class="header__inner">
+				<a href="#"><img class="header__logo" src="Assets/images/logo.png" alt="" /></a>
+				<!-- <img class="header__logo" src="Assets/images/logo.png" alt="" /> -->
+			</div>
+		</header>
+		<section class="container">
+			<div class="section-header">
+				<h2>Выберите коллекцию фасадов</h2>
+				<div class="facade__filter" id="facade__filter">
+					<button id="filter_btn" class="filter__btn">
+						Фильтры
+					</button>
+					<div class="filter__info" id="filter_info">
+						<!-- <a href="" class="filter__info__clear-btn" id="filter__info__clear-btn">a</a> -->
+					</div>
+					<div class="facade__filter__cat" id="slideBar">
+						<div class="filter__materials-list">
+							<h3>Материал фасада</h3>
+							<label class="item_label" for="mdf"
+								>МДФ
+								<input type="checkbox" id="mdf" />
+								<span class="checkmark"></span>
+							</label>
+
+							<label class="item_label" for="dsp"
+								>ДСП
+								<input type="checkbox" id="dsp" />
+								<span class="checkmark"></span>
+							</label>
+							<label class="item_label" for="massive"
+								>Массив
+								<input type="checkbox" id="massive" />
+								<span class="checkmark"></span>
+							</label>
+						</div>
+						<div class="filter__covers-list">
+							<h3>Покрытие фасада</h3>
+							<label class="item_label" for="pvh"
+								>Пленка ПВХ
+								<input type="checkbox" id="pvh" />
+								<span class="checkmark"></span>
+							</label>
+
+							<label class="item_label" for="pet"
+								>Пленка ПЭТ
+								<input type="checkbox" id="pet" />
+								<span class="checkmark"></span>
+							</label>
+
+							<label class="item_label" for="lak"
+								>Лак
+								<input type="checkbox" id="lak" />
+								<span class="checkmark"></span>
+							</label>
+
+							<label class="item_label" for="plastic"
+								>Пластик
+								<input type="checkbox" id="plastic" />
+								<span class="checkmark"></span>
+							</label>
+
+							<label class="item_label" for="paint"
+								>Краска
+								<input type="checkbox" id="paint" />
+								<span class="checkmark"></span>
+							</label>
+
+							<label class="item_label" for="ldsp"
+								>Ламинация (ДСП)
+								<input type="checkbox" id="ldsp" />
+								<span class="checkmark"></span>
+							</label>
+						</div>
+						<button
+							class="filter__submit-btn"
+							id="filter_submit-btn"							
+						>
+							Показать
+						</button>
+						<button
+							class="filter__submit-btn"
+							id="filter_clear-btn"							
+						>
+							Очистить
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="cards__section">
+				<div class="item__card" id="resh_blue">
+					<img
+						class="item__img"
+						src="Assets/images/resh_blue_s.jpg"
+						alt="Реш Синий"
+					/>
+					<h4 class="item__name">Реш Синий</h4>
+					<p class="item__description">MДФ<span></span>ПЭТ пленка</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="resh_white">
+					<img
+						class="item__img"
+						src="Assets\images\resh_white_s.jpg"
+						alt="Реш Белый"
+					/>
+					<h4 class="item__name">Реш Белый</h4>
+					<p class="item__description">MДФ<span></span>ПЭТ пленка</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="berlin">
+					<img
+						class="item__img"
+						src="Assets/images/berlin_s.jpg"
+						alt="Берлин"
+					/>
+					<h4 class="item__name">Берлин</h4>
+					<p class="item__description">МДФ<span></span>ПВХ пленка</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="megion">
+					<img
+						class="item__img"
+						src="Assets/images/megion_s.jpg"
+						alt="Мегион"
+					/>
+					<h4 class="item__name">Мегион</h4>
+					<p class="item__description">МДФ<span></span>ПВХ пленка</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="asha_white">
+					<img
+						class="item__img"
+						src="Assets/images/asha_white_s.jpg"
+						alt="Аша Белая"
+					/>
+					<h4 class="item__name">Аша Белая</h4>
+					<p class="item__description">ДСП<span></span>Лак</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="asha_green">
+					<img
+						class="item__img"
+						src="Assets/images/asha_green_s.jpg"
+						alt="Аша Зеленая"
+					/>
+					<h4 class="item__name">Аша Зеленая</h4>
+					<p class="item__description">ДСП<span></span>Лак</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="asha_red">
+					<img
+						class="item__img"
+						src="Assets/images/asha_red_s.jpg"
+						alt="Аша Красная"
+					/>
+					<h4 class="item__name">Аша Красная</h4>
+					<p class="item__description">ДСП<span></span>Лак</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="asha_beige">
+					<img
+						class="item__img"
+						src="Assets/images/asha_beige_s.jpg"
+						alt="Аша Бежевая"
+					/>
+					<h4 class="item__name">Аша Бежевая</h4>
+					<p class="item__description">ДСП<span></span>Лак</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="nordic">
+					<img
+						class="item__img"
+						src="Assets/images/nordic_s.jpg"
+						alt="Нордик"
+					/>
+					<h4 class="item__name">Нордик</h4>
+					<p class="item__description">ДСП<span></span>ЛДСП</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="birsk">
+					<img class="item__img" src="Assets/images/birsk_s.jpg" alt="Бирск" />
+					<h4 class="item__name">Бирск</h4>
+					<p class="item__description">ДСП<span></span>Пластик</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="fatezh">
+					<img
+						class="item__img"
+						src="Assets/images/fatezh_s.jpg"
+						alt="Фатеж"
+					/>
+					<h4 class="item__name">Фатеж</h4>
+					<p class="item__description">ДСП<span></span>ЛДСП</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="rouza">
+					<img class="item__img" src="Assets/images/rouza_s.jpg" alt="Руза" />
+					<h4 class="item__name">Руза</h4>
+					<p class="item__description">ДСП<span></span>ЛДСП</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="nevel">
+					<img class="item__img" src="Assets/images/nevel_s.jpg" alt="" />
+					<h4 class="item__name">Невель</h4>
+					<p class="item__description">Массив<span></span>Краска</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="newport_taupe">
+					<img
+						class="item__img"
+						src="Assets/images/newport_taupe_s.jpg"
+						alt="Ньюпорт Топо"
+					/>
+					<h4 class="item__name">Ньюпорт Топо</h4>
+					<p class="item__description">МДФ<span></span>ПВХ пленка</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="newport_white">
+					<img
+						class="item__img"
+						src="Assets/images/newport_white_s.jpg"
+						alt="Ньюпорт Белый"
+					/>
+					<h4 class="item__name">Ньюпорт Белый</h4>
+					<p class="item__description">МДФ<span></span>ПВХ пленка</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="oxford">
+					<img
+						class="item__img"
+						src="Assets/images/oxford_s.jpg"
+						alt="Оксфорд"
+					/>
+					<h4 class="item__name">Оксфорд</h4>
+					<p class="item__description">МДФ<span></span>ПВХ пленка</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="petergof">
+					<img
+						class="item__img"
+						src="Assets/images/petergof_s.jpg"
+						alt="Петергоф"
+					/>
+					<h4 class="item__name">Петергоф</h4>
+					<p class="item__description">МДФ<span></span>ПВХ пленка</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="plast">
+					<img class="item__img" src="Assets/images/plast_s.jpg" alt="Пласт" />
+					<h4 class="item__name">Пласт</h4>
+					<p class="item__description">ДСП<span></span>ЛДСП</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="santiago">
+					<img
+						class="item__img"
+						src="Assets/images/santiago_s.jpg"
+						alt="Сантьяго"
+					/>
+					<h4 class="item__name">Сантьяго</h4>
+					<p class="item__description">ДСП<span></span>ЛДСП</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="sofia">
+					<img class="item__img" src="Assets/images/sofia_s.jpg" alt="София" />
+					<h4 class="item__name">София</h4>
+					<p class="item__description">ДСП<span></span>ПВХ пленка</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+				<div class="item__card" id="tomari">
+					<img
+						class="item__img"
+						src="Assets/images/tomari_s.jpg"
+						alt="Томари"
+					/>
+					<h4 class="item__name">Томари</h4>
+					<p class="item__description">МДФ<span></span>ПВХ пленка</p>
+					<a href="#select__area" class="item__choice-button">Выбрать</a>
+				</div>
+			</div>
+		</section>
+		<div class="container select__area" id="select__area">
+			<div class="selected__facade">
+				<div class="selected__facade__discription">
+					
+				</div>
+				<h2>Выбранная коллекция:</h2>
+				<div class="selected__facade__name" >
+					<h2 id="selected__facade__name">Руза</h2>
+				</div>
+				<div class="selected__facade__img">
+					<img src="Assets/images/rouza_s.jpg"  width="250px" alt="" class="selected__facade__img" id="selected__facade__img">				
+				</div>
+			</div>
+			<a class="next__btn btn" href="#shape-box" id="next__btn">Далее</a>
+		</div>
+		<section class="container shape-box" id="shape-box">
+			<div class="section-header">
+				<h2>Выберите геометрию кухни:</h2>
+			</div>
+			<div class="geometry__cards-box">
+				<label for="geometry-line-shaped" class="radio-container line">Прямая
+					<input type="radio" id="geometry-line-shaped" name="shape" value="line" checked>
+					<span class="radio-checkmark"></span>
+				</label>
+				<label for="geometry-l-shaped-left" class="radio-container ">Угловая левая
+					<input type="radio" id="geometry-l-shaped-left" name="shape" value="l-shaped-left">
+					<span class="radio-checkmark"></span>
+				</label>
+				<label for="geometry-l-shaped-right" class="radio-container">Угловая правая
+					<input type="radio" id="geometry-l-shaped-right" name="shape" value="l-shaped-right">
+					<span class="radio-checkmark"></span>
+				</label>
+				<label for="geometry-u-shaped" class="radio-container">П-образная
+					<input type="radio" id="geometry-u-shaped" name="shape" value="u-shaped">
+					<span class="radio-checkmark"></span>
+				</label>
+			</div>
+			<div class="enter__size-box">
+				<div class="enter__size-display">
+					<div class="enter__size-wall"></div>
+				</div>
+				<div class="enter__size-input-area">
+					<label id="size-first"> Введитe первый размер: 
+						<input type="number" min="1000" max="6000" value="0" maxlength="4" onkeypress="return onlyNumberKey(event)" onInput="checkLength(4,this)">
+					</label>
+					<label id="size-second"> Введитe второй размер: 
+						<input type="number" min="1000" max="6000" value="0" maxlength="4" onkeypress="return onlyNumberKey(event)" onInput="checkLength(4,this)">
+					</label>
+					<label id="size-third"> Введитe третий размер: 
+						<input type="number" min="1000" max="6000" value="0" maxlength="4" onkeypress="return onlyNumberKey(event)" onInput="checkLength(4,this)">
+					</label>
+				</div>
+			</div>
+		</section>
+		<div class="baner"></div>
+	</body>
+	<script src="js/script.min.js"></script>
+</html>

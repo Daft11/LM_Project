@@ -696,10 +696,16 @@ html {
   background-color: inherit;
 }
 
-.enter__size-input-area input:focus {
-  border-bottom: solid 1px #484E5C;
-  -webkit-animation: underlineBlinking 2s linear infinite;
-          animation: underlineBlinking 2s linear infinite;
+.enter__size-input-area input:valid {
+  border-bottom: solid 2px #66C05D;
+  -webkit-animation: none;
+          animation: none;
+}
+
+.enter__size-input-area input:invalid {
+  border-bottom: solid 2px red;
+  -webkit-animation: none;
+          animation: none;
 }
 
 @-webkit-keyframes underlineBlinking {
@@ -731,18 +737,18 @@ html {
 .enter__size-wall-l-shaped-left.anim-left-border,
 .enter__size-wall-l-shaped-right.anim-left-border,
 .enter__size-wall-u-shaped.anim-left-border {
-  -webkit-animation: leftBorderLineBlinking 1.6s linear infinite;
-          animation: leftBorderLineBlinking 1.6s linear infinite;
+  -webkit-animation: leftBorderLineBlinking 1.5s linear infinite;
+          animation: leftBorderLineBlinking 1.5s linear infinite;
 }
 
 @-webkit-keyframes leftBorderLineBlinking {
-  50% {
+  20% {
     border-left-color: #66C05D;
   }
 }
 
 @keyframes leftBorderLineBlinking {
-  50% {
+  20% {
     border-left-color: #66C05D;
   }
 }
@@ -751,18 +757,18 @@ html {
 .enter__size-wall-l-shaped-left.anim-top-border,
 .enter__size-wall-l-shaped-right.anim-top-border,
 .enter__size-wall-u-shaped.anim-top-border {
-  -webkit-animation: topBorderLineBlinking 1.6s linear infinite;
-          animation: topBorderLineBlinking 1.6s linear infinite;
+  -webkit-animation: topBorderLineBlinking 1.5s linear infinite;
+          animation: topBorderLineBlinking 1.5s linear infinite;
 }
 
 @-webkit-keyframes topBorderLineBlinking {
-  50% {
+  20% {
     border-top-color: #66C05D;
   }
 }
 
 @keyframes topBorderLineBlinking {
-  50% {
+  20% {
     border-top-color: #66C05D;
   }
 }
@@ -771,25 +777,36 @@ html {
 .enter__size-wall-l-shaped-left.anim-right-border,
 .enter__size-wall-l-shaped-right.anim-right-border,
 .enter__size-wall-u-shaped.anim-right-border {
-  -webkit-animation: rightBorderLineBlinking 1.6s linear infinite;
-          animation: rightBorderLineBlinking 1.6s linear infinite;
+  -webkit-animation: rightBorderLineBlinking 1.5s linear infinite;
+          animation: rightBorderLineBlinking 1.5s linear infinite;
 }
 
 @-webkit-keyframes rightBorderLineBlinking {
-  50% {
+  20% {
     border-right-color: #66C05D;
   }
 }
 
 @keyframes rightBorderLineBlinking {
-  50% {
+  20% {
     border-right-color: #66C05D;
   }
 }
 
+.enter__size-wall {
+  /*
+		top is first input
+		rigth is second input
+		bottom is third input
+	*/
+}
+
 .enter__size-wall-line-shaped {
   margin-top: 90px;
-  border-top-style: solid;
+  border-left-style: solid;
+  transform: rotate(90deg);
+  height: 310px;
+  width: 205px;
 }
 
 .enter__size-wall-l-shaped-left {
@@ -798,8 +815,11 @@ html {
 }
 
 .enter__size-wall-l-shaped-right {
+  border-left-style: solid;
   border-top-style: solid;
-  border-right-style: solid;
+  transform: rotate(90deg);
+  height: 309px;
+  width: 205px;
 }
 
 .enter__size-wall-u-shaped {

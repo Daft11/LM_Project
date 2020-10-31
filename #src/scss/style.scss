@@ -679,9 +679,19 @@ html {
 		text-align: right;
 		background-color:inherit;
 
-		&:focus{
-			border-bottom: solid 1px $colorlightgray;
-			animation: underlineBlinking 2s linear infinite;
+		
+		&:valid{
+			border-bottom: solid 2px $lmgreencolor;
+			animation: none;
+		}
+		&:invalid{
+			border-bottom: solid 2px red;
+			animation: none;
+			// &:focus{
+			// 	border-radius: unset;
+			// 	border-bottom: solid 2px red;
+			//     animation: underlineBlinking 1.6s linear infinite;
+			// }
 		}
 	}
 
@@ -701,35 +711,48 @@ html {
 	width: 310px;
 	border: hidden 14px $colorgray;
 	&.anim-left-border{
-		animation: leftBorderLineBlinking 1.6s linear infinite;
-		@keyframes leftBorderLineBlinking { 50% { border-left-color: $lmgreencolor; } };
+		animation: leftBorderLineBlinking 1.5s linear infinite;
+		@keyframes leftBorderLineBlinking { 20% { border-left-color: $lmgreencolor; } };
 	}
 	&.anim-top-border{
-		animation: topBorderLineBlinking 1.6s linear infinite;
-		@keyframes topBorderLineBlinking { 50% { border-top-color: $lmgreencolor; } };
+		animation: topBorderLineBlinking 1.5s linear infinite;
+		@keyframes topBorderLineBlinking { 20% { border-top-color: $lmgreencolor; } };
 	}
 	&.anim-right-border{
-		animation: rightBorderLineBlinking 1.6s linear infinite;
-		@keyframes rightBorderLineBlinking { 50% { border-right-color: $lmgreencolor; } };
+		animation: rightBorderLineBlinking 1.5s linear infinite;
+		@keyframes rightBorderLineBlinking { 20% { border-right-color: $lmgreencolor; } };
 	}
 }
-.enter__size-wall {
+.enter__size-wall { 
+	/*
+		top is first input
+		rigth is second input
+		bottom is third input
+	*/
 	&-line-shaped {
 		margin-top: 90px;
-		border-top-style: solid;
+		border-left-style: solid;
+		transform: rotate(90deg);
+		height: 310px;
+		width: 205px;
 	}
 	&-l-shaped-left {
 		border-left-style: solid;
 		border-top-style: solid;
+
 	}
 	&-l-shaped-right {
+		border-left-style: solid;
 		border-top-style: solid;
-		border-right-style: solid;
+		transform: rotate(90deg);
+		height: 309px;
+		width: 205px;
 	}
 	&-u-shaped {
 		border-left-style: solid;
 		border-top-style: solid;
 		border-right-style: solid;
+
 	}
 }
 

@@ -192,7 +192,7 @@ const choiceBox = {
 	currentName: null,
 	currentImgSrc: null,
 	linkButton(){
-		this.areaButton.addEventListener('click', shapeBox.showBox)
+		this.areaButton.addEventListener('click', shapeBox.showBox.bind(shapeBox))
 		const links = document.getElementsByClassName("item__choice-button");
 		for (let item of links) {
 			item.addEventListener('click', this.action);
@@ -208,7 +208,7 @@ const choiceBox = {
 
 		document.getElementById("selected__facade__name").innerHTML = choiceBox.currentName;
 		document.getElementById("selected__facade__img").src = choiceBox.currentImgSrc;
-		console.log(choiceBox.currentItemId);
+		// console.log(choiceBox.currentItemId);
 
 	},
 	showArea(){
@@ -220,17 +220,6 @@ const choiceBox = {
 }
 
 
-
-function hide() {
-	document.getElementById("select__area").style.height = 0;
-	choiceBox.currentAreaHeight = document.getElementById("select__area").style.height;
-}
-
-// function showBox(){
-// 	document.getElementById("shape-box").style.minHeight = "600px";
-// 	document.getElementById("shape-box").style.height = "100vh";
-// }
-
 const shapeBox = {
 	shape: "line",
 	firstSize: 0,
@@ -239,7 +228,7 @@ const shapeBox = {
 	shapeCardsIdArray: ["geometry-line-shaped", "geometry-l-shaped-left", "geometry-l-shaped-right", "geometry-u-shaped"],
 	sizeInputIdArray:["size-first", "size-second", "size-third"],
 	// sizeDisplay: document.getElementsByClassName("enter__size-display")[0],
-	sizeWall: document.getElementsByClassName("enter__size-display")[0].firstElementChild,
+	sizeWall: document.getElementById("size-wall"),
 	sizeWallDefaultClassName: "enter__size-wall",
 	inputVisibilitySet: {
 		line: [1, 0.2, 0.2, false, true, true],
@@ -247,16 +236,36 @@ const shapeBox = {
 		lShapedRight: [1, 1, 0.2, false, false, true],
 		uShaped: [1, 1, 1, false, false, false]
 	},
+	animDependency: {
+		first: "anim-left-border",
+		second: "anim-top-border",
+		third: "anim-left-border"
+	},
 
-	switchShape(){
+
+	showBox(){ //For initiate shape-box
+		document.getElementById("shape-box").style.minHeight = "600px";
+		document.getElementById("shape-box").style.height = "100vh";
+		this.switchShape();
+		this.getShape();
+		this.flashingWall();
+	},
+
+	inputFocus(){ //Sets the marker on firts size input
+		const firstInput = document.getElementById(this.sizeInputIdArray[0]).firstElementChild;
+		firstInput.focus();
+		firstInput.select();
+	},
+
+	switchShape(){ //Adds listener on every shape icon
 		this.shapeCardsIdArray.forEach(e => {
-			document.getElementById(e).addEventListener("click", shapeBox.getShape.bind(shapeBox));
+			document.getElementById(e).addEventListener("change", shapeBox.getShape.bind(shapeBox));
 		});
 	},
 
 
 
-	getShape(){
+	getShape(){ //Changing property Shape of shapeBox object
 		this.shapeCardsIdArray.forEach(e => {
 			if(document.getElementById(e).checked){
 
@@ -269,71 +278,51 @@ const shapeBox = {
 		});
 	},
 
-	inputShowSwitch(shape) {
-		if(shape === "line"){
-			for (var i = 0; i < this.sizeInputIdArray.length; i++) {
-				document.getElementById(this.sizeInputIdArray[i]).style.opacity = this.inputVisibilitySet.line[i];
-				document.getElementById(this.sizeInputIdArray[i]).firstElementChild.disabled = this.inputVisibilitySet.line[i+3];
-			}
-				this.inputFocus();
-				return this.flashingWall(shape);
+	inputShowSwitch(shape) { //Controls size input visibility and access
+		const shapeNameConvert = shape.split("-").reduce((r,e,i)=>{
+			if(i>0){
+				return r + e.charAt(0).toUpperCase() + e.slice(1)
+			} else return r + e
+		},"")
+		for (var i = 0; i < this.sizeInputIdArray.length; i++){
+			document.getElementById(this.sizeInputIdArray[i]).style.opacity = this.inputVisibilitySet[shapeNameConvert][i];
+			document.getElementById(this.sizeInputIdArray[i]).firstElementChild.disabled = this.inputVisibilitySet[shapeNameConvert][i+3];
 		}
-		if(shape === "l-shaped-left"){
-			for (var i = 0; i < this.sizeInputIdArray.length; i++) {
-				document.getElementById(this.sizeInputIdArray[i]).style.opacity = this.inputVisibilitySet.lShapedLeft[i];
-				document.getElementById(this.sizeInputIdArray[i]).firstElementChild.disabled = this.inputVisibilitySet.lShapedLeft[i+3];
-			}
-				this.inputFocus(shape);
-				return this.flashingWall(shape);
-		}
-		if(shape === "l-shaped-right"){
-			for (var i = 0; i < this.sizeInputIdArray.length; i++) {
-				document.getElementById(this.sizeInputIdArray[i]).style.opacity = this.inputVisibilitySet.lShapedRight[i];
-				document.getElementById(this.sizeInputIdArray[i]).firstElementChild.disabled = this.inputVisibilitySet.lShapedRight[i+3];
-			}
-				this.inputFocus(shape);
-				return this.flashingWall(shape);
-		}
-		if(shape === "u-shaped"){
-			for (var i = 0; i < this.sizeInputIdArray.length; i++) {
-				document.getElementById(this.sizeInputIdArray[i]).style.opacity = this.inputVisibilitySet.uShaped[i];
-				document.getElementById(this.sizeInputIdArray[i]).firstElementChild.disabled = this.inputVisibilitySet.uShaped[i+3];
-			}
-				this.inputFocus(shape);
-				return this.flashingWall(shape);
+		return this.inputFocus();
+	},
+
+
+	flashingWall(){ //Adds listeners for animate visual models of walls to all size inputs
+		for (var i = 0; i < this.sizeInputIdArray.length; i++) {
+			document.getElementById(this.sizeInputIdArray[i]).firstElementChild.addEventListener("focus", shapeBox.animCurrentWall);
+			document.getElementById(this.sizeInputIdArray[i]).firstElementChild.addEventListener("blur", shapeBox.animCurrentWallDisable);
 		}
 	},
 
-	showBox(){
-		document.getElementById("shape-box").style.minHeight = "600px";
-		document.getElementById("shape-box").style.height = "100vh";
-		shapeBox.getShape();
-		shapeBox.switchShape();
-		// shapeBox.inputShowSwitch();
+
+	animCurrentWall(evt){ //Enable blinking animaion for current wall
+		const inputNumber = evt.target.name;
+		const className = shapeBox.animDependency[inputNumber];
+		shapeBox.sizeWall.classList.add(className);
 	},
 
-	inputFocus(){
-		const firstInput = document.getElementById(this.sizeInputIdArray[0]).firstElementChild
-		firstInput.focus();
-		firstInput.select();
+	animCurrentWallDisable(evt){ //Disable blinking animaion for current wall
+		const inputNumber = evt.target.name;
+		const className = shapeBox.animDependency[inputNumber];
+		shapeBox.sizeWall.classList.remove(className);
 	},
-
-	flashingWall(className){
-		if (className === "l-shaped-left") {this.sizeWall.className += " anim-left-border" }
-		else if (className === "line") {this.sizeWall.className += " anim-top-border" }
-		else if (className === "l-shaped-right") {this.sizeWall.className += " anim-top-border" }	
-		else if (className === "u-shaped") {this.sizeWall.className += " anim-left-border" }
-	}
 }
 
-function onlyNumberKey(evt) { 
+
+
+function onlyNumberKey(evt) { // Validation for size inputs (only numbers)
         var iKeyCode = (evt.which) ? evt.which : evt.keyCode
         if (iKeyCode > 31 && (iKeyCode < 48 || iKeyCode > 57))
             return false;
         return true;
     } 
 
-function checkLength(len,ele){
+function checkLength(len,ele){ // Validation for size inputs (length control max:4)
 	var fieldLength = ele.value.length;
 	if(fieldLength <= len){return true;}
 	else {

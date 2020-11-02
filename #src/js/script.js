@@ -219,6 +219,9 @@ const choiceBox = {
 	}
 }
 
+// class choiceBox {
+// 	constructor()
+// }
 
 const shapeBox = {
 	shape: "line",
@@ -239,13 +242,19 @@ const shapeBox = {
 	animDependency: {
 		first: "anim-left-border",
 		second: "anim-top-border",
-		third: "anim-left-border"
+		third: "anim-right-border"
+	},
+	inputValidSumArray: {
+		first: {validity: false, enabled: false},
+		second: {validity: false, enabled: false},
+		third: {validity: false, enabled: false}
 	},
 
 
 	showBox(){ //For initiate shape-box
 		document.getElementById("shape-box").style.minHeight = "600px";
 		document.getElementById("shape-box").style.height = "100vh";
+		document.getElementById("shape-box").style.overflow = "visible";
 		this.switchShape();
 		this.getShape();
 		this.flashingWall();
@@ -274,6 +283,8 @@ const shapeBox = {
 				this.sizeWall.className += e.slice(8);
 				// console.log(this.wallsModel.className);
 				this.inputShowSwitch(this.shape);
+				hideBaner();
+				this.formValidCheck();
 			}
 		});
 	},
@@ -284,9 +295,13 @@ const shapeBox = {
 				return r + e.charAt(0).toUpperCase() + e.slice(1)
 			} else return r + e
 		},"")
+		this.inputValidSumArray.first.enabled = !this.inputVisibilitySet[shapeNameConvert][3];
+		this.inputValidSumArray.second.enabled = !this.inputVisibilitySet[shapeNameConvert][4];
+		this.inputValidSumArray.third.enabled = !this.inputVisibilitySet[shapeNameConvert][5];
 		for (var i = 0; i < this.sizeInputIdArray.length; i++){
 			document.getElementById(this.sizeInputIdArray[i]).style.opacity = this.inputVisibilitySet[shapeNameConvert][i];
 			document.getElementById(this.sizeInputIdArray[i]).firstElementChild.disabled = this.inputVisibilitySet[shapeNameConvert][i+3];
+
 		}
 		return this.inputFocus();
 	},
@@ -296,6 +311,10 @@ const shapeBox = {
 		for (var i = 0; i < this.sizeInputIdArray.length; i++) {
 			document.getElementById(this.sizeInputIdArray[i]).firstElementChild.addEventListener("focus", shapeBox.animCurrentWall);
 			document.getElementById(this.sizeInputIdArray[i]).firstElementChild.addEventListener("blur", shapeBox.animCurrentWallDisable);
+
+			// add listener for validation and submit
+			document.getElementById(this.sizeInputIdArray[i]).firstElementChild.addEventListener("input", shapeBox.inputValidCheck);
+			// document.getElementById(this.sizeInputIdArray[i]).firstElementChild.addEventListener("change", shapeBox.inputValidCheck);
 		}
 	},
 
@@ -311,9 +330,35 @@ const shapeBox = {
 		const className = shapeBox.animDependency[inputNumber];
 		shapeBox.sizeWall.classList.remove(className);
 	},
+
+	inputValidCheck(evt){
+		const inputNumber = evt.target.name;
+		shapeBox.inputValidSumArray[inputNumber].validity = evt.target.validity.valid;
+		return shapeBox.formValidCheck();
+	},
+
+	formValidCheck(){
+		const correct = [];
+		let res = true;
+		for (const [key, value] of Object.entries(this.inputValidSumArray)) {
+			if(value.enabled) {correct.push(key)}
+		}
+		for (var i = 0; i < correct.length; i++) {
+			res = res && shapeBox.inputValidSumArray[correct[i]].validity;
+		}
+		if (res) {return showBaner()} else hideBaner();
+	},
 }
 
+function showBaner(){
+	// document.getElementById("baner").style.height = "100px";
+	document.getElementById("baner").style.height = "100px";
+	return window.location.href = "#baner";
+}
 
+function hideBaner(){
+	document.getElementById("baner").style.height = "0";
+}
 
 function onlyNumberKey(evt) { // Validation for size inputs (only numbers)
         var iKeyCode = (evt.which) ? evt.which : evt.keyCode

@@ -3,17 +3,6 @@ window.onload = () => {
 	const slideBar = document.getElementById('slideBar');
 	choiceBox.linkButton();
 	filter_btn.addEventListener('click', filterObj.openFilters);
-	// filterObj.getMaterialsIds().forEach((e, i) => {
-	// 	e = document.getElementById(e);
-	// 	e.addEventListener('click', function (event) {
-	// 		let sortCovers = filterObj.getSortCovers()
-	// 		if (event.target.checked === true) {
-	// 			sortCovers[i].forEach(element => document.getElementById(element).checked = true);
-	// 		} else {
-	// 			sortCovers[i].forEach(element => document.getElementById(element).checked = false);
-	// 		}
-	// 	});
-	// });
 }
 
 class Filter {
@@ -184,50 +173,34 @@ const filterObj = new Filter();
 
 
 const choiceBox = {
-	area: document.getElementById("select__area"),
+	facadeId: null,
 	areaButton: document.getElementById("next__btn"),
-	currentItemId: null,
-	currentAreaHeight: null,
-	correctAreaHeight: "100px",
-	currentName: null,
-	currentImgSrc: null,
+
 	linkButton(){
-		this.areaButton.addEventListener('click', shapeBox.showBox.bind(shapeBox))
+		this.areaButton.addEventListener('click', shapeBox.startBox.bind(shapeBox))
 		const links = document.getElementsByClassName("item__choice-button");
 		for (let item of links) {
-			item.addEventListener('click', this.action);
+			item.addEventListener('click', this.action.bind(choiceBox));
 		}
 	},
 	action(evt){
-		// console.log(this);
-		choiceBox.showArea();
-		choiceBox.currentItemId = evt.target.parentElement.id;
-		choiceBox.currentName = evt.target.parentElement.getElementsByClassName("item__name")[0].innerHTML;
-		choiceBox.currentImgSrc = evt.target.parentElement.getElementsByClassName("item__img")[0].src;
-		choiceBox.currentAreaHeight = document.getElementById("select__area").style.height;
+		// this.setBoxHeight();
+		setBoxHeight("submit__facade", "100px");
+		const facadeName = document.getElementById("selected__facade__name");
+		const facadeImg = document.getElementById("selected__facade__img");
+		facadeName.innerHTML = evt.target.parentElement.getElementsByClassName("item__name")[0].innerHTML;
+		facadeImg.src = evt.target.parentElement.getElementsByClassName("item__img")[0].src;
+		this.facadeId = evt.target.parentElement.id;
 
-		document.getElementById("selected__facade__name").innerHTML = choiceBox.currentName;
-		document.getElementById("selected__facade__img").src = choiceBox.currentImgSrc;
-		// console.log(choiceBox.currentItemId);
-
-	},
-	showArea(){
-		// console.log("show");
-		if (this.currentAreaHeight != this.correctAreaHeight) {
-			this.area.style.height = this.correctAreaHeight;
-		}
 	}
 }
 
-// class choiceBox {
-// 	constructor()
-// }
+
+
 
 const shapeBox = {
 	shape: "line",
-	firstSize: 0,
-	secondSize: 0,
-	thirdSize: 0,
+	sizeArray: [],
 	shapeCardsIdArray: ["geometry-line-shaped", "geometry-l-shaped-left", "geometry-l-shaped-right", "geometry-u-shaped"],
 	sizeInputIdArray:["size-first", "size-second", "size-third"],
 	// sizeDisplay: document.getElementsByClassName("enter__size-display")[0],
@@ -251,13 +224,15 @@ const shapeBox = {
 	},
 
 
-	showBox(){ //For initiate shape-box
+	startBox(){ //For initiate shape-box
+		setBoxHeight("shape-box", "100vh");
 		document.getElementById("shape-box").style.minHeight = "600px";
-		document.getElementById("shape-box").style.height = "100vh";
 		document.getElementById("shape-box").style.overflow = "visible";
 		this.switchShape();
 		this.getShape();
 		this.flashingWall();
+		document.getElementById("calc__btn").addEventListener("click", summaryProgress.startSummary.bind(summaryProgress));
+
 	},
 
 	inputFocus(){ //Sets the marker on firts size input
@@ -283,7 +258,7 @@ const shapeBox = {
 				this.sizeWall.className += e.slice(8);
 				// console.log(this.wallsModel.className);
 				this.inputShowSwitch(this.shape);
-				hideBaner();
+				setBoxHeight("submit-size", "0px");
 				this.formValidCheck();
 			}
 		});
@@ -314,7 +289,6 @@ const shapeBox = {
 
 			// add listener for validation and submit
 			document.getElementById(this.sizeInputIdArray[i]).firstElementChild.addEventListener("input", shapeBox.inputValidCheck);
-			// document.getElementById(this.sizeInputIdArray[i]).firstElementChild.addEventListener("change", shapeBox.inputValidCheck);
 		}
 	},
 
@@ -333,8 +307,10 @@ const shapeBox = {
 
 	inputValidCheck(evt){
 		const inputNumber = evt.target.name;
+		+evt.target.value === 0 ? evt.target.setCustomValidity("Invalid field.") : evt.target.setCustomValidity("")
 		shapeBox.inputValidSumArray[inputNumber].validity = evt.target.validity.valid;
-		return shapeBox.formValidCheck();
+		shapeBox.formValidCheck();
+		
 	},
 
 	formValidCheck(){
@@ -346,18 +322,117 @@ const shapeBox = {
 		for (var i = 0; i < correct.length; i++) {
 			res = res && shapeBox.inputValidSumArray[correct[i]].validity;
 		}
-		if (res) {return showBaner()} else hideBaner();
+		if (res) {
+			setBoxHeight("baner-help", "0");
+			setBoxHeight("submit-size", "100px");
+			document.getElementById("shape-box").scrollIntoView(false)
+			// setTimeout(function(){document.getElementById("shape-box").scrollIntoView(false)}, 25);
+			this.pushSize(correct);
+		} else {
+			setBoxHeight("baner-help", "100px");
+			setBoxHeight("submit-size", "0px");
+			summaryProgress.hideSummary();
+			// document.getElementById("baner").removeEventListener("click", summaryProgress.startSummary.bind(summaryProgress));
+		}
 	},
+
+	pushSize(correct){
+		this.sizeArray = [];
+		for (var i = 0; i < correct.length; i++) {
+			this.sizeArray.push(Number(document.getElementById(this.sizeInputIdArray[i]).firstElementChild.value));
+		}
+	}
 }
 
-function showBaner(){
-	// document.getElementById("baner").style.height = "100px";
-	document.getElementById("baner").style.height = "100px";
-	return window.location.href = "#baner";
+const shellArray = {
+	position: {
+		top: {
+			prices: [],
+			sizes: [15, 30, 40, 45, 60, 80],
+			lmCode:[82140031, 82140036, 82140037, 82140038, 82140011, 82140012]
+		},
+		botttom:{
+			prices: [1007, 1638, 2051, 1571, 2255, 2255, 2838],
+			sizes: [15, 30, 40, 45, 60, 80, 1000, 1050, 1200],
+			lmCode: [82140023, 82140024, 82140025, 82140026, 82140027, 82140028, 82140013]
+		}
+	}
 }
 
-function hideBaner(){
-	document.getElementById("baner").style.height = "0";
+const summaryProgress = {
+	areaId: "calculating__area",
+	facade: null,
+	shape: null,
+	size: [],
+	sizeSum: 0,
+	bottomSells: [],
+	resShellSizeArray: [],
+	resShellPriceArray: [],
+
+	startSummary(){
+		this.pullParams();
+		setBoxHeight(this.areaId, "100vh");
+	},
+
+	hideSummary(){
+		setBoxHeight(this.areaId, "0");
+	},
+
+	pullParams(){
+		this.facade = Object.assign("", shapeBox["facadeId"])
+		this.shape = Object.assign("", shapeBox["shape"]);
+		this.size = Object.assign([], shapeBox["sizeArray"]);
+		this.sizeSum = 0;
+		this.bottomSells = [];
+		this.resShellSizeArray = [];
+		this.resShellPriceArray = [];
+		// console.log(this.facade);
+		// console.log(this.shape);
+		console.log(this.size);
+		this.calculateSizes();
+	},
+
+	calculateSizes(){
+		const bigShells = shellArray.position.botttom.sizes.slice(6);
+		this.size.sort((a, b) => a - b);
+		for (var i = 0; i < this.size.length - 1; i++) {
+			let res = this.size[i];
+
+			for (var j = 0; j < bigShells.length; j++) {
+
+				if(this.size[i] - bigShells[j] >= 0) {
+					res = this.size[i] - bigShells[j];
+					if(j === bigShells.length - 1){
+						this.size[i] = res;
+						this.bottomSells.push(bigShells[j]);
+						break
+					}
+				}else {
+					this.size[i] = res;
+					this.bottomSells.push(bigShells[j-1]);
+					break
+				}
+			}
+		}
+		console.log(this.size);
+		console.log(this.bottomSells);
+		this.sizeSum = this.size.reduce((reducer, elem, index) => {return reducer += elem}, 0);
+		// for (var i = 0; i < this.size.length - 1; i++){
+		// 	var res = this.size;
+		// 	if (res > 0) {
+
+		// 	}
+		// }
+
+	}
+}
+
+function setBoxHeight(areaId, correctAreaHeight){
+	const area = document.getElementById(areaId);
+	const currentAreaHeight = document.getElementById(areaId).style.height;
+	if (currentAreaHeight != correctAreaHeight) {
+			area.style.height = correctAreaHeight;
+		}
 }
 
 function onlyNumberKey(evt) { // Validation for size inputs (only numbers)
@@ -377,8 +452,4 @@ function checkLength(len,ele){ // Validation for size inputs (length control max
 	}
 }
 
-const summaryProgress = {
-	// facade:
-	// 
-	// 
-}
+

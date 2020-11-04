@@ -111,6 +111,7 @@ body {
   max-width: 1170px;
   margin: 0 auto;
   width: 100%;
+  overflow: hidden;
 }
 
 html {
@@ -511,7 +512,7 @@ html {
 
 /*Selected facade area*/
 
-.select__area {
+.submit__area {
   position: -webkit-sticky;
   position: sticky;
   bottom: 0;
@@ -828,22 +829,41 @@ html {
   border-right-style: solid;
 }
 
-.baner {
+#baner-help {
   bottom: 0;
-  display: flex;
-  justify-content: center;
-  /*justify-content: space-around;*/
-  align-items: center;
-  height: 0px;
+  height: 100px;
   width: 100vw;
-  background-color: #ffffff;
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
   transition: height 0.2s ease 0s;
 }
 
-.space {
+.calculating__area {
+  padding-top: 80px;
   width: 100vw;
   height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.price-area {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.price__holder {
+  width: 250px;
+  height: 80px;
+  border: solid 3px #484E5C;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  text-align: center;
+  background: linear-gradient(to top, #484E5C 50%, #ffffff 50%);
+}
+
+.price__holder__name {
+  color: #ffffff;
 }
 
 @media (max-width: 1182px) {

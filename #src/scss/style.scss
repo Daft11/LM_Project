@@ -51,6 +51,7 @@ body {
 	max-width: $mw + px;
 	margin: 0 auto;
 	width: 100%;
+	overflow: hidden;
 	@media (max-width: $md1+px) {
 		max-width: none;
 		padding: 0 20px;
@@ -466,7 +467,7 @@ html {
 
 /*Selected facade area*/
 
-.select__area{
+.submit__area{
 	position:-webkit-sticky;
 	position:sticky;
 	bottom:0;
@@ -757,27 +758,51 @@ html {
 	}
 }
 
-.baner{
-	// position:-webkit-sticky;
-	// margin: 0 !important;
-	// margin-left:-100px;
+#baner-help{
 	bottom: 0;
-	display: flex;
-	justify-content: center;
-	/*justify-content: space-around;*/
-	align-items: center;
-	height: 0px;
+	height: 100px;
 	width: 100vw;
-	// overflow: hidden;
-	background-color:$contrast;
-	box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
-	// @include anim(0.2s, 0s);
 	@include anim_some(height, 0.2s, 0s);
 }
 
-.space{
+.calculating__area{
+	padding-top: 80px;
 	width: 100vw;
 	height: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.price-area{
+	// margin-top: 80px;
+	display:flex;
+	align-items: center;
+	justify-content: space-around;
+}
+
+.price__holder{
+	width: 250px;
+	height: 80px;
+	border: solid 3px $colorlightgray;
+	border-radius: 10px;
+	// background-color: $contrast;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	text-align:center;
+	background: linear-gradient(to top, $colorlightgray 50%, $contrast 50%);
+	// background-color: $contrast, $colorlightgray;
+	// align-items: center;
+
+	&__number{
+		// margin-top: 20px;
+		// text-align:center;
+	}
+	&__name{
+		color: $contrast;
+		// padding: auto;
+		// margin: auto;
+	}
 }
 
 

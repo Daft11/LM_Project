@@ -837,7 +837,7 @@ html {
 }
 
 .calculating__area {
-  padding-top: 80px;
+  margin-top: 80px;
   width: 100vw;
   height: 0;
   display: flex;

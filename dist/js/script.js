@@ -348,12 +348,12 @@ const shellArray = {
 	position: {
 		top: {
 			prices: [],
-			sizes: [15, 30, 40, 45, 60, 80],
+			sizes: [150, 300, 400, 450, 600, 800],
 			lmCode:[82140031, 82140036, 82140037, 82140038, 82140011, 82140012]
 		},
 		botttom:{
 			prices: [1007, 1638, 2051, 1571, 2255, 2255, 2838],
-			sizes: [15, 30, 40, 45, 60, 80, 1000, 1050, 1200],
+			sizes: [150, 300, 400, 450, 600, 800, 1000, 1050, 1200],
 			lmCode: [82140023, 82140024, 82140025, 82140026, 82140027, 82140028, 82140013]
 		}
 	}
@@ -361,8 +361,8 @@ const shellArray = {
 
 const summaryProgress = {
 	areaId: "calculating__area",
-	facade: null,
-	shape: null,
+	facade: "",
+	shape: "",
 	size: [],
 	sizeSum: 0,
 	bottomSells: [],
@@ -379,7 +379,7 @@ const summaryProgress = {
 	},
 
 	pullParams(){
-		this.facade = Object.assign("", shapeBox["facadeId"])
+		this.facade = Object.assign("", shapeBox["facadeId"]);
 		this.shape = Object.assign("", shapeBox["shape"]);
 		this.size = Object.assign([], shapeBox["sizeArray"]);
 		this.sizeSum = 0;
@@ -393,8 +393,9 @@ const summaryProgress = {
 	},
 
 	calculateSizes(){
-		const bigShells = shellArray.position.botttom.sizes.slice(6);
-		this.size.sort((a, b) => a - b);
+		const bigShells = shellArray.position.botttom.sizes.slice(6); //array of shells for angle
+		this.size.sort((a, b) => a - b);//sort sizes
+		if (this.size.length > 1) this.size[this.size.length - 1] -= (600 * (this.size.length - 1));//decrease main wall saize
 		for (var i = 0; i < this.size.length - 1; i++) {
 			let res = this.size[i];
 
@@ -423,7 +424,6 @@ const summaryProgress = {
 
 		// 	}
 		// }
-
 	}
 }
 
@@ -453,3 +453,93 @@ function checkLength(len,ele){ // Validation for size inputs (length control max
 }
 
 
+//=================
+const sizes = [150, 300, 400, 450, 600, 800, 1000, 1050, 1200];
+const sum = 6000 - 3000%50;
+const maxLength = Math.ceil(sum * 0.002);
+
+function permutation(len, acc = []){
+	let res = []
+	sizes.forEach(s => {
+		let temp = null
+
+		if (s === 1200) {
+			if(acc.length >= 2) {return res}
+			else temp = permutation(len-s, acc.concat([s]))
+		}
+
+		else if (s === 1050) {
+			if(acc.length >= 2) {return res}
+			else temp = permutation(len-s, acc.concat([s]))
+		}
+
+		else if (s === 1000) {
+			if(acc.length >= 2) {return res}
+			else temp = permutation(len-s, acc.concat([s]))
+		}
+
+		else if (s === 600) {
+			if(acc.length >= 4) {return res}
+			else temp = permutation(len-s, acc.concat([s]))
+		}
+
+		else if (s === 400) {
+			if(acc.length >= 2) {return res}
+			else temp = permutation(len-s, acc.concat([s]))
+		}
+
+		else if (s === 450) {
+			if(acc.length >= 2) {return res}
+			else temp = permutation(len-s, acc.concat([s]))
+		}
+
+		else if (s === 300) {
+			if(acc.length >= 2) {return res}
+			else temp = permutation(len-s, acc.concat([s]))
+		}
+
+		if (s === 150) {
+			if(acc.length >= 1) {return res}
+			else temp = permutation(len-s, acc.concat([s]))
+		} 
+
+		else if (s == len) {
+			res.push(acc.concat([s]))
+		} 
+
+		else if (s < len) {
+			if(acc.length == maxLength) {return res}
+			temp = permutation(len-s, acc.concat([s]))
+		} 
+		if (temp) {
+			// let count = 0;
+			res = res.concat(temp)
+			// res = res.concat(temp)
+		}
+	})
+	if (res.length) {
+		return res
+	}
+}
+
+
+
+const p = new Promise((resolve, reject) => {
+	setTimeout(() =>{
+		const result = permutation(sum)
+		resolve(result)
+	}, 0)
+})
+
+p.then(res => {
+	return new Promise((resolve, reject)=>{
+		setTimeout(() =>{
+			res.forEach(e => {e.sort((a, b) => a - b)})
+			resolve(res)
+		}, 0)
+	})
+}).then(res => {
+	return Array.from(new Set(res.map(JSON.stringify)), JSON.parse);
+}).then(res => {
+ 	console.log(res)
+ })

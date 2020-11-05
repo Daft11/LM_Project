@@ -352,9 +352,9 @@ const shellArray = {
 			lmCode:[82140031, 82140036, 82140037, 82140038, 82140011, 82140012]
 		},
 		botttom:{
-			prices: [1007, 1638, 2051, 1571, 2255, 2255, 2838],
+			prices: [1007, 1638, 2051, 1571, 2255, 2255, 2838, 2838, 2838],
 			sizes: [150, 300, 400, 450, 600, 800, 1000, 1050, 1200],
-			lmCode: [82140023, 82140024, 82140025, 82140026, 82140027, 82140028, 82140013]
+			lmCode: [82140023, 82140024, 82140025, 82140026, 82140027, 82140028, 82140013, 82140013, 82140013]
 		}
 	}
 }
@@ -371,7 +371,7 @@ const summaryProgress = {
 
 	startSummary(){
 		this.pullParams();
-		setBoxHeight(this.areaId, "100vh");
+		setBoxHeight(this.areaId, "300px");
 	},
 
 	hideSummary(){
@@ -388,43 +388,123 @@ const summaryProgress = {
 		this.resShellPriceArray = [];
 		// console.log(this.facade);
 		// console.log(this.shape);
-		console.log(this.size);
 		this.calculateSizes();
 	},
 
 	calculateSizes(){
-		const bigShells = shellArray.position.botttom.sizes.slice(6); //array of shells for angle
 		this.size.sort((a, b) => a - b);//sort sizes
-		if (this.size.length > 1) this.size[this.size.length - 1] -= (600 * (this.size.length - 1));//decrease main wall saize
-		for (var i = 0; i < this.size.length - 1; i++) {
-			let res = this.size[i];
+		// console.log(this.size);
+		this.size.forEach((e, i) => promRed(e-e%50,shellArray.position.botttom.sizes).then(res => this.pusher(res, this.resShellSizeArray)));
 
-			for (var j = 0; j < bigShells.length; j++) {
+	},
 
-				if(this.size[i] - bigShells[j] >= 0) {
-					res = this.size[i] - bigShells[j];
-					if(j === bigShells.length - 1){
-						this.size[i] = res;
-						this.bottomSells.push(bigShells[j]);
-						break
-					}
-				}else {
-					this.size[i] = res;
-					this.bottomSells.push(bigShells[j-1]);
-					break
-				}
+	pusher(x, array){
+		array.push(x)
+		if (array.length == this.size.length){this.bigSizeReducer(array, array.length)};
+	},
+	
+	bigSizeReducer(allArrays){
+		const bigShells = shellArray.position.botttom.sizes.slice(6); //array of shells for angle
+		allArrays.forEach((elem, index) => {
+			let res = elem.filter(e => {return !bigShells.includes(e[e.length-3])});
+			if (allArrays.length == 3){res = res.filter(e =>{return e.includes(600)||!bigShells.includes(e[e.length-3])})}
+			else if (allArrays.length == 2){res = res.filter(e =>{return e.includes(600)||!bigShells.includes(e[e.length-2])})}
+			else if (allArrays.length == 1){res = res.filter(e =>{return !bigShells.includes(e[e.length-1])})}
+			// console.log(res)
+
+			allArrays[index] = res;
+			// console.log(allArrays)
+		});
+		this.calcPrice(allArrays);
+	},
+
+	calcPrice(allArrays){
+		allArrays.forEach((currentArray, i) => {
+			let currentArrayPrices = [];
+			currentArray.forEach(sizePack => {
+				price = sizePack.reduce((price, e) => { 
+					const index = shellArray.position.botttom.sizes.indexOf(e);
+					price += shellArray.position.botttom.prices[index];
+					return price;
+				}, 0)
+				currentArrayPrices.push(price)
+			})
+			this.resShellPriceArray.push(currentArrayPrices);
+		})
+		// console.log(allArrays);
+		// console.log(this.resShellPriceArray);
+		// console.log(this.resShellPriceArray);
+		this.pickCalculator(allArrays, this.resShellPriceArray);
+		return this.resShellPriceArray;
+	},
+
+	pickCalculator(allArrays, prices){
+		console.log(allArrays)
+		if(allArrays.length === 1){this.pickBuildOne(allArrays, prices)}
+		else if(allArrays.length === 2){this.pickBuildTwo(allArrays, prices)}
+		else if(allArrays.length === 3){this.pickBuildThree(allArrays, prices)}
+	},
+	
+	pickBuildOne(allArrays, prices){
+		let resultBuild = [];
+		let resultPrice = Infinity;
+		allArrays[0].forEach((sizePackOne,i) => {
+			if(prices[0][i]<resultPrice){
+			resultBuild = sizePackOne;
+			resultPrice = prices[0][i];
 			}
-		}
-		console.log(this.size);
-		console.log(this.bottomSells);
-		this.sizeSum = this.size.reduce((reducer, elem, index) => {return reducer += elem}, 0);
-		// for (var i = 0; i < this.size.length - 1; i++){
-		// 	var res = this.size;
-		// 	if (res > 0) {
+		});
+		console.log(resultBuild);
+		console.log(resultPrice);
+	},
 
-		// 	}
-		// }
-	}
+	pickBuildTwo(allArrays, prices){
+		const bigShells = shellArray.position.botttom.sizes.slice(6);
+		let resultBuild = [];
+		let resultPrice = Infinity;
+		let priceToRemove = shellArray.position.botttom.prices[shellArray.position.botttom.sizes.indexOf(600)]
+		allArrays[0].forEach((sizePackOne,i) => {
+
+			if(bigShells.includes(sizePackOne[sizePackOne.length-1])){
+				allArrays[1].forEach((sizePackTwo, j) => {
+					if((!bigShells.includes(sizePackTwo[sizePackTwo.length-1])&&sizePackTwo.includes(600))){
+						if(prices[0][i]+(prices[1][j]-priceToRemove)<resultPrice) {
+							resultBuild = sizePackOne.concat(sizePackTwo);
+							resultBuild = this.removeOneShell(resultBuild, 600);
+							resultPrice = prices[0][i]-priceToRemove+prices[1][j];
+						}
+					}
+				})
+			}else if ((!bigShells.includes(sizePackOne[sizePackOne.length-1])&&sizePackOne.includes(600))){
+				allArrays[1].forEach((sizePackTwo, j) => {
+					if(bigShells.includes(sizePackTwo[sizePackTwo.length-1])){
+						if((prices[0][i]-priceToRemove)+prices[1][j]<resultPrice) {
+							resultBuild = sizePackOne.concat(sizePackTwo);
+							resultBuild = this.removeOneShell(resultBuild, 600);
+							resultPrice = prices[0][i]-priceToRemove+prices[1][j];
+						}
+					}
+				})
+			}
+		});
+
+		console.log(resultBuild);
+		console.log(resultPrice);
+	},
+
+		pickBuildThree(allArrays, prices){
+		console.log(resultBuild);
+		console.log(resultPrice);
+		console.log("Nope")
+	},
+
+	removeOneShell(array, size){
+		const index = array.indexOf(size);
+		if (index > -1) {
+  			array.splice(index, 1);
+  		}
+  		return array;
+	},
 }
 
 function setBoxHeight(areaId, correctAreaHeight){
@@ -454,92 +534,25 @@ function checkLength(len,ele){ // Validation for size inputs (length control max
 
 
 //=================
-const sizes = [150, 300, 400, 450, 600, 800, 1000, 1050, 1200];
-const sum = 6000 - 3000%50;
-const maxLength = Math.ceil(sum * 0.002);
 
-function permutation(len, acc = []){
-	let res = []
-	sizes.forEach(s => {
-		let temp = null
-
-		if (s === 1200) {
-			if(acc.length >= 2) {return res}
-			else temp = permutation(len-s, acc.concat([s]))
-		}
-
-		else if (s === 1050) {
-			if(acc.length >= 2) {return res}
-			else temp = permutation(len-s, acc.concat([s]))
-		}
-
-		else if (s === 1000) {
-			if(acc.length >= 2) {return res}
-			else temp = permutation(len-s, acc.concat([s]))
-		}
-
-		else if (s === 600) {
-			if(acc.length >= 4) {return res}
-			else temp = permutation(len-s, acc.concat([s]))
-		}
-
-		else if (s === 400) {
-			if(acc.length >= 2) {return res}
-			else temp = permutation(len-s, acc.concat([s]))
-		}
-
-		else if (s === 450) {
-			if(acc.length >= 2) {return res}
-			else temp = permutation(len-s, acc.concat([s]))
-		}
-
-		else if (s === 300) {
-			if(acc.length >= 2) {return res}
-			else temp = permutation(len-s, acc.concat([s]))
-		}
-
-		if (s === 150) {
-			if(acc.length >= 1) {return res}
-			else temp = permutation(len-s, acc.concat([s]))
-		} 
-
-		else if (s == len) {
-			res.push(acc.concat([s]))
-		} 
-
-		else if (s < len) {
-			if(acc.length == maxLength) {return res}
-			temp = permutation(len-s, acc.concat([s]))
-		} 
-		if (temp) {
-			// let count = 0;
-			res = res.concat(temp)
-			// res = res.concat(temp)
-		}
-	})
-	if (res.length) {
-		return res
-	}
-}
-
-
-
-const p = new Promise((resolve, reject) => {
-	setTimeout(() =>{
-		const result = permutation(sum)
-		resolve(result)
-	}, 0)
-})
-
-p.then(res => {
-	return new Promise((resolve, reject)=>{
-		setTimeout(() =>{
+const promRed = (len, sizes) => {
+var requestOptions = {
+  method: 'POST',
+  headers: {"Content-Type": "application/json"},
+  body: JSON.stringify({"length":len,"sizes":sizes}),
+  // redirect: 'follow'
+};
+return fetch("http://localhost:3000/permutation", requestOptions)
+	.then(response => response.json())
+	.then(res => {
+		return new Promise((resolve, reject)=>{
 			res.forEach(e => {e.sort((a, b) => a - b)})
 			resolve(res)
-		}, 0)
+		})
 	})
-}).then(res => {
+	.then(res => {
 	return Array.from(new Set(res.map(JSON.stringify)), JSON.parse);
-}).then(res => {
- 	console.log(res)
- })
+	})
+	.catch(error => console.log('error', error));
+}
+

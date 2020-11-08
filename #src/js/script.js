@@ -10,7 +10,8 @@ class Filter {
 	itemsArray
 
 	constructor() {
-		fetch('http://localhost:3000/getItemsArray').then(res => res.json()).then(res => { 
+		fetch('http://localhost:3001/getItemsArray').then(res => res.json()).then(res => { 
+		// fetch('http://testtesttest.nios.ru/getItemsArray').then(res => res.json()).then(res => { 
 			this.itemsArray = res;
 			// console.log(this.itemsArray);
 			this.setOfChecked();
@@ -542,7 +543,8 @@ var requestOptions = {
   body: JSON.stringify({"length":len,"sizes":sizes}),
   // redirect: 'follow'
 };
-return fetch("http://localhost:3000/permutation", requestOptions)
+return fetch("http://localhost:3001/permutation", requestOptions)
+// return fetch("http://testtesttest.nios.ru/permutation", requestOptions)
 	.then(response => response.json())
 	.then(res => {
 		return new Promise((resolve, reject)=>{

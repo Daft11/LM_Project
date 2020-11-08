@@ -592,6 +592,26 @@ html {
 			// display: block;
 		}
 	}
+	& input:disabled ~ .radio-checkmark{ // In developnemt status
+		&::after{
+			z-index:101;
+			text-align:center;
+			padding-top: 35px;
+			color: black;
+			font-size: 20px;
+			content:'В разработке';
+			display: block;
+			position: absolute;
+			border-radius:inherit;
+			width:100%;
+			height:100%;
+			background-color: #ffffff;
+			opacity: 0.6;
+		}
+
+	}
+
+
 	&:hover input ~ .radio-checkmark {
 		background-color: #787E8C;
 
@@ -754,7 +774,6 @@ html {
 		border-left-style: solid;
 		border-top-style: solid;
 		border-right-style: solid;
-
 	}
 }
 
@@ -765,12 +784,15 @@ html {
 	@include anim_some(height, 0.2s, 0s);
 }
 
+//calculating area
+
 .calculating__area{
 	margin-top: 80px;
 	width: 100vw;
 	height: 0;
 	display: flex;
 	flex-direction: column;
+	// @include anim_some(height, 0.2s, 0s);
 }
 
 .price-area{

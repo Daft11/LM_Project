@@ -10,8 +10,8 @@ class Filter {
 	itemsArray
 
 	constructor() {
-		fetch('/getItemsArray').then(res => res.json()).then(res => { 
-		// fetch('http://testtesttest.nios.ru/getItemsArray').then(res => res.json()).then(res => { 
+		// fetch('/getItemsArray').then(res => res.json()).then(res => { 
+		fetch('http://localhost:3001/getItemsArray').then(res => res.json()).then(res => { 
 			this.itemsArray = res;
 			console.log(this.itemsArray);
 			this.setOfChecked();
@@ -367,8 +367,8 @@ const summaryProgress = {
 	size: [],
 	sizeSum: 0,
 	bottomSells: [],
-	resShellSizeArray: [],
-	resShellPriceArray: [],
+	resShellSizeArrayBottom: [],
+	resShellPriceArrayBottom: [],
 
 	startSummary(){
 		this.pullParams();
@@ -385,8 +385,8 @@ const summaryProgress = {
 		this.size = Object.assign([], shapeBox["sizeArray"]);
 		this.sizeSum = 0;
 		this.bottomSells = [];
-		this.resShellSizeArray = [];
-		this.resShellPriceArray = [];
+		this.resShellSizeArrayBottom = [];
+		this.resShellPriceArrayBottom = [];
 		// console.log(this.facade);
 		// console.log(this.shape);
 		this.calculateSizes();
@@ -395,7 +395,7 @@ const summaryProgress = {
 	calculateSizes(){
 		this.size.sort((a, b) => a - b);//sort sizes
 		// console.log(this.size);
-		this.size.forEach((e, i) => promRed(e-e%50,shellArray.position.botttom.sizes).then(res => this.pusher(res, this.resShellSizeArray)));
+		this.size.forEach((e, i) => promRed(e-e%50,shellArray.position.botttom.sizes).then(res => this.pusher(res, this.resShellSizeArrayBottom)));
 
 	},
 
@@ -430,13 +430,12 @@ const summaryProgress = {
 				}, 0)
 				currentArrayPrices.push(price)
 			})
-			this.resShellPriceArray.push(currentArrayPrices);
+			this.resShellPriceArrayBottom.push(currentArrayPrices);
 		})
 		// console.log(allArrays);
-		// console.log(this.resShellPriceArray);
-		// console.log(this.resShellPriceArray);
-		this.pickCalculator(allArrays, this.resShellPriceArray);
-		return this.resShellPriceArray;
+		// console.log(this.resShellPriceArrayBottom);
+		this.pickCalculator(allArrays, this.resShellPriceArrayBottom);
+		return this.resShellPriceArrayBottom;
 	},
 
 	pickCalculator(allArrays, prices){
@@ -451,12 +450,12 @@ const summaryProgress = {
 		let resultPrice = Infinity;
 		allArrays[0].forEach((sizePackOne,i) => {
 			if(prices[0][i]<resultPrice){
-			resultBuild = sizePackOne;
+			resultBuild[0] = sizePackOne;
 			resultPrice = prices[0][i];
 			}
 		});
-		console.log(resultBuild);
-		console.log(resultPrice);
+		console.log("resultBuild: ", resultBuild);
+		console.log("resultPrice: ", resultPrice);
 	},
 
 	pickBuildTwo(allArrays, prices){
@@ -470,8 +469,11 @@ const summaryProgress = {
 				allArrays[1].forEach((sizePackTwo, j) => {
 					if((!bigShells.includes(sizePackTwo[sizePackTwo.length-1])&&sizePackTwo.includes(600))){
 						if(prices[0][i]+(prices[1][j]-priceToRemove)<resultPrice) {
-							resultBuild = sizePackOne.concat(sizePackTwo);
-							resultBuild = this.removeOneShell(resultBuild, 600);
+							// resultBuild = sizePackOne.concat(sizePackTwo);
+							// resultBuild = this.removeOneShell(resultBuild, 600);
+							resultBuild[0] = sizePackOne;
+							resultBuild[1] = sizePackTwo;
+							resultBuild[1] = this.removeOneShell(resultBuild[1], 600);
 							resultPrice = prices[0][i]-priceToRemove+prices[1][j];
 						}
 					}
@@ -480,8 +482,10 @@ const summaryProgress = {
 				allArrays[1].forEach((sizePackTwo, j) => {
 					if(bigShells.includes(sizePackTwo[sizePackTwo.length-1])){
 						if((prices[0][i]-priceToRemove)+prices[1][j]<resultPrice) {
-							resultBuild = sizePackOne.concat(sizePackTwo);
-							resultBuild = this.removeOneShell(resultBuild, 600);
+							// resultBuild = sizePackOne.concat(sizePackTwo);
+							resultBuild[0] = sizePackOne;
+							resultBuild[0] = this.removeOneShell(resultBuild[0], 600);
+							resultBuild[1] = sizePackTwo;
 							resultPrice = prices[0][i]-priceToRemove+prices[1][j];
 						}
 					}
@@ -489,13 +493,13 @@ const summaryProgress = {
 			}
 		});
 
-		console.log(resultBuild);
-		console.log(resultPrice);
+		console.log("resultBuild: ", resultBuild);
+		console.log("resultPrice: ", resultPrice);
 	},
 
 		pickBuildThree(allArrays, prices){
-		console.log(resultBuild);
-		console.log(resultPrice);
+		// console.log("resultBuild: ", resultBuild);
+		// console.log("resultPrice: ", resultPrice);
 		console.log("Nope")
 	},
 
@@ -506,6 +510,14 @@ const summaryProgress = {
   		}
   		return array;
 	},
+
+	calcShells:{
+		
+	}
+
+	// renderResult(){
+
+	// }
 }
 
 function setBoxHeight(areaId, correctAreaHeight){
@@ -543,8 +555,8 @@ var requestOptions = {
   body: JSON.stringify({"length":len,"sizes":sizes}),
   // redirect: 'follow'
 };
-return fetch("/permutation", requestOptions)
-// return fetch("http://testtesttest.nios.ru/permutation", requestOptions)
+// return fetch("/permutation", requestOptions)
+return fetch("http://localhost:3001/permutation", requestOptions)
 	.then(response => response.json())
 	.then(res => {
 		return new Promise((resolve, reject)=>{

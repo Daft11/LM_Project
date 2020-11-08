@@ -10,10 +10,10 @@ class Filter {
 	itemsArray
 
 	constructor() {
-		fetch('http://localhost:3001/getItemsArray').then(res => res.json()).then(res => { 
+		fetch('/getItemsArray').then(res => res.json()).then(res => { 
 		// fetch('http://testtesttest.nios.ru/getItemsArray').then(res => res.json()).then(res => { 
 			this.itemsArray = res;
-			// console.log(this.itemsArray);
+			console.log(this.itemsArray);
 			this.setOfChecked();
 		});
 	}
@@ -543,7 +543,7 @@ var requestOptions = {
   body: JSON.stringify({"length":len,"sizes":sizes}),
   // redirect: 'follow'
 };
-return fetch("http://localhost:3001/permutation", requestOptions)
+return fetch("/permutation", requestOptions)
 // return fetch("http://testtesttest.nios.ru/permutation", requestOptions)
 	.then(response => response.json())
 	.then(res => {

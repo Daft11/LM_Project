@@ -11,9 +11,9 @@ class Filter {
 
 	constructor() {
 		// fetch('/getItemsArray').then(res => res.json()).then(res => { 
-		fetch('http://localhost:3001/getItemsArray').then(res => res.json()).then(res => { 
+		fetch('/getItemsArray').then(res => res.json()).then(res => { 
 			this.itemsArray = res;
-			console.log(this.itemsArray);
+			// console.log(this.itemsArray);
 			this.setOfChecked();
 		}).catch(error => console.warn(error));;
 	}
@@ -345,7 +345,7 @@ const shapeBox = {
 	}
 }
 
-let framesInfo = fetch('http://localhost:3001/getFramesInfo').then(res => res.json()).then(res => {framesInfo = res})
+let framesInfo = fetch('/getFramesInfo').then(res => res.json()).then(res => {framesInfo = res})
 
 
 const summaryProgress = {
@@ -378,8 +378,8 @@ const summaryProgress = {
 	},
 
 	consShowFiltredBuilds(array){
-		console.log("filtredBuildVars: ", array)
-		console.log(this.calcPrice(array))
+		// console.log("filtredBuildVars: ", array)
+		this.calcPrice(array)
 	},
 
 	calcPrice(allArrays){
@@ -396,10 +396,13 @@ const summaryProgress = {
 			currentArrayPrices = currentArrayPrices.reduce((r, e) => r + e)
 			this.resFramePriceArrayBottom.push(currentArrayPrices);
 		})
-		return this.resFramePriceArrayBottom;
+
+		this.pickCheapest(allArrays, this.resFramePriceArrayBottom)
+		console.log(this.resFrameSizeArrayBottom, this.resFramePriceArrayBottom)
+		// return this.resFramePriceArrayBottom;
 	},
 
-	pickCheapest(arrayFrames, arrayPrice){
+	pickCheapest(frameArray, priceArray){
 		let index = 0;
 		let price = this.resFramePriceArrayBottom.reduce((r, e, i)=>{
 			if(e<r){
@@ -407,7 +410,9 @@ const summaryProgress = {
 				return e
 			} else {return r}
 		}, Infinity)
-		return arrayPrice[index]
+
+		this.resFrameSizeArrayBottom = frameArray[index]
+		this.resFramePriceArrayBottom = priceArray[index]
 	}
 
 
@@ -683,7 +688,7 @@ var requestOptions = {
   // redirect: 'follow'
 };
 // return fetch("/permutation", requestOptions)
-return fetch("http://localhost:3001/permutation", requestOptions)
+return fetch("/permutation", requestOptions)
 	.then(response => response.json())
 	.then(res => {
 		return new Promise((resolve, reject)=>{

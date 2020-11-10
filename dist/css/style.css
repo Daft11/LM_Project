@@ -853,6 +853,7 @@ html {
 }
 
 .calculating__area {
+  flex-shrink: 0;
   margin-top: 80px;
   width: 100vw;
   height: 0;

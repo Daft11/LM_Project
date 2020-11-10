@@ -15,7 +15,7 @@ class Filter {
 			this.itemsArray = res;
 			console.log(this.itemsArray);
 			this.setOfChecked();
-		});
+		}).catch(error => console.warn(error));;
 	}
 
 	setOfChecked = () => {
@@ -226,8 +226,8 @@ const shapeBox = {
 
 
 	startBox(){ //For initiate shape-box
-		setBoxHeight("shape-box", "100vh");
-		document.getElementById("shape-box").style.minHeight = "600px";
+		setBoxHeight("shape-box", "100vh", "600px");
+		// document.getElementById("shape-box").style.minHeight = "600px";
 		document.getElementById("shape-box").style.overflow = "visible";
 		this.switchShape();
 		this.getShape();
@@ -325,13 +325,13 @@ const shapeBox = {
 		}
 		if (res) {
 			setBoxHeight("baner-help", "0");
-			setBoxHeight("submit-size", "100px");
+			setBoxHeight("submit-size", "100px", "80px");
 			document.getElementById("shape-box").scrollIntoView(false)
 			// setTimeout(function(){document.getElementById("shape-box").scrollIntoView(false)}, 25);
 			this.pushSize(correct);
 		} else {
 			setBoxHeight("baner-help", "100px");
-			setBoxHeight("submit-size", "0px");
+			setBoxHeight("submit-size", "0px", "0");
 			summaryProgress.hideSummary();
 			// document.getElementById("baner").removeEventListener("click", summaryProgress.startSummary.bind(summaryProgress));
 		}
@@ -345,30 +345,34 @@ const shapeBox = {
 	}
 }
 
-const shellArray = {
-	position: {
-		top: {
-			prices: [],
-			sizes: [150, 300, 400, 450, 600, 800],
-			lmCode:[82140031, 82140036, 82140037, 82140038, 82140011, 82140012]
-		},
-		botttom:{
-			prices: [1007, 1638, 2051, 1571, 2255, 2255, 2838, 2838, 2838],
-			sizes: [150, 300, 400, 450, 600, 800, 1000, 1050, 1200],
-			lmCode: [82140023, 82140024, 82140025, 82140026, 82140027, 82140028, 82140013, 82140013, 82140013]
-		}
-	}
-}
+let framesInfo = fetch('http://localhost:3001/getFramesInfo').then(res => res.json()).then(res => {framesInfo = res})
+	// .then((res) => res.json())
+ //    .then((resData) => {return resData})
+    // .catch(error => console.warn(error))
+// {
+// 	position: {
+// 		top: {
+// 			prices: [],
+// 			sizes: [150, 300, 400, 450, 600, 800],
+// 			lmCode:[82140031, 82140036, 82140037, 82140038, 82140011, 82140012]
+// 		},
+// 		botttom:{
+// 			prices: [1007, 1638, 2051, 1571, 2255, 2255, 2838, 2838, 2838],
+// 			sizes: [150, 300, 400, 450, 600, 800, 1000, 1050, 1200],
+// 			lmCode: [82140023, 82140024, 82140025, 82140026, 82140027, 82140028, 82140013, 82140013, 82140013]
+// 		}
+// 	}
+// }
 
 const summaryProgress = {
 	areaId: "calculating__area",
 	facade: "",
 	shape: "",
 	size: [],
-	sizeSum: 0,
-	bottomSells: [],
-	resShellSizeArrayBottom: [],
-	resShellPriceArrayBottom: [],
+	resFrameSizeArrayTop: [],
+	resFramePriceArrayTop: [],
+	resFrameSizeArrayBottom: [],
+	resFramePriceArrayBottom: [],
 
 	startSummary(){
 		this.pullParams();
@@ -383,108 +387,111 @@ const summaryProgress = {
 		this.facade = Object.assign("", shapeBox["facadeId"]);
 		this.shape = Object.assign("", shapeBox["shape"]);
 		this.size = Object.assign([], shapeBox["sizeArray"]);
-		this.sizeSum = 0;
-		this.bottomSells = [];
-		this.resShellSizeArrayBottom = [];
-		this.resShellPriceArrayBottom = [];
-		// console.log(this.facade);
-		// console.log(this.shape);
-		this.calculateSizes();
+		this.resFrameSizeArrayBottom = [];
+		this.resFramePriceArrayBottom = [];
+		this.CalcFramesBottom = new CalcFrames(this.size, "bottom");
+		// this.CalcFramesTop = new CalcFrames(this.size, "top");
 	},
+}
 
-	calculateSizes(){
-		this.size.sort((a, b) => a - b);//sort sizes
-		// console.log(this.size);
-		this.size.forEach((e, i) => promRed(e-e%50,shellArray.position.botttom.sizes).then(res => this.pusher(res, this.resShellSizeArrayBottom)));
 
-	},
+class CalcFrames{
+	constructor(sizeNoSort, position){
+		// this.size = sizeNoSort;
+		if(position === "bottom"){
+			this.resFramePriceArrayBottom = [];
+			this.resFrameSizeArrayBottom = [];
+			this.calculateSizes(sizeNoSort);
+		}else if(position === "top"){
+			this.resFramePriceArrayTop = [];
+			this.resFrameSizeArrayTop = [];
+			this.calculateSizes(sizeNoSort);
+		}
+	}
 
-	pusher(x, array){
+	calculateSizes = (sizeNoSort) => {
+			// this.size = sizeNoSort.sort((a, b) => a - b);//sort sizes
+			this.size = sizeNoSort
+			this.size.forEach((e, i) => promRed(e-e%50,framesInfo.position.botttom.sizes).then(res => this.pusher(res, this.resFrameSizeArrayBottom)));
+		}
+
+	pusher = (x, array) => {
 		array.push(x)
 		if (array.length == this.size.length){this.bigSizeReducer(array, array.length)};
-	},
-	
+	}
+		
 	bigSizeReducer(allArrays){
-		const bigShells = shellArray.position.botttom.sizes.slice(6); //array of shells for angle
+		const bigFrames = framesInfo.position.botttom.sizes.slice(6); //array of Frames for angle
 		allArrays.forEach((elem, index) => {
-			let res = elem.filter(e => {return !bigShells.includes(e[e.length-3])});
-			if (allArrays.length == 3){res = res.filter(e =>{return e.includes(600)||!bigShells.includes(e[e.length-3])})}
-			else if (allArrays.length == 2){res = res.filter(e =>{return e.includes(600)||!bigShells.includes(e[e.length-2])})}
-			else if (allArrays.length == 1){res = res.filter(e =>{return !bigShells.includes(e[e.length-1])})}
-			// console.log(res)
-
+			let res = elem.filter(e => {return !bigFrames.includes(e[e.length-3])});
+			if (allArrays.length == 3){res = res.filter(e =>{return e.includes(600)||!bigFrames.includes(e[e.length-3])})}
+			else if (allArrays.length == 2){res = res.filter(e =>{return e.includes(600)||!bigFrames.includes(e[e.length-2])})}
+			else if (allArrays.length == 1){res = res.filter(e =>{return !bigFrames.includes(e[e.length-1])})}
 			allArrays[index] = res;
-			// console.log(allArrays)
 		});
 		this.calcPrice(allArrays);
-	},
+	}
 
-	calcPrice(allArrays){
+	calcPrice = (allArrays) =>{
 		allArrays.forEach((currentArray, i) => {
 			let currentArrayPrices = [];
 			currentArray.forEach(sizePack => {
-				price = sizePack.reduce((price, e) => { 
-					const index = shellArray.position.botttom.sizes.indexOf(e);
-					price += shellArray.position.botttom.prices[index];
+				let price = sizePack.reduce((price, e) => { 
+					const index = framesInfo.position.botttom.sizes.indexOf(e);
+					price += framesInfo.position.botttom.prices[index];
 					return price;
 				}, 0)
 				currentArrayPrices.push(price)
 			})
-			this.resShellPriceArrayBottom.push(currentArrayPrices);
+			this.resFramePriceArrayBottom.push(currentArrayPrices);
 		})
-		// console.log(allArrays);
-		// console.log(this.resShellPriceArrayBottom);
-		this.pickCalculator(allArrays, this.resShellPriceArrayBottom);
-		return this.resShellPriceArrayBottom;
-	},
+		this.pickCalculator(allArrays, this.resFramePriceArrayBottom);
+		return this.resFramePriceArrayBottom;
+	}
 
 	pickCalculator(allArrays, prices){
 		console.log(allArrays)
 		if(allArrays.length === 1){this.pickBuildOne(allArrays, prices)}
 		else if(allArrays.length === 2){this.pickBuildTwo(allArrays, prices)}
 		else if(allArrays.length === 3){this.pickBuildThree(allArrays, prices)}
-	},
-	
+	}
+		
 	pickBuildOne(allArrays, prices){
 		let resultBuild = [];
 		let resultPrice = Infinity;
 		allArrays[0].forEach((sizePackOne,i) => {
-			if(prices[0][i]<resultPrice){
+			if((prices[0][i]<resultPrice)&&(sizePackOne.includes(600))){
 			resultBuild[0] = sizePackOne;
 			resultPrice = prices[0][i];
 			}
 		});
 		console.log("resultBuild: ", resultBuild);
 		console.log("resultPrice: ", resultPrice);
-	},
+	}
 
 	pickBuildTwo(allArrays, prices){
-		const bigShells = shellArray.position.botttom.sizes.slice(6);
+		const bigFrames = framesInfo.position.botttom.sizes.slice(6);
 		let resultBuild = [];
 		let resultPrice = Infinity;
-		let priceToRemove = shellArray.position.botttom.prices[shellArray.position.botttom.sizes.indexOf(600)]
+		let priceToRemove = framesInfo.position.botttom.prices[framesInfo.position.botttom.sizes.indexOf(600)]
 		allArrays[0].forEach((sizePackOne,i) => {
-
-			if(bigShells.includes(sizePackOne[sizePackOne.length-1])){
+				if(bigFrames.includes(sizePackOne[sizePackOne.length-1])){
 				allArrays[1].forEach((sizePackTwo, j) => {
-					if((!bigShells.includes(sizePackTwo[sizePackTwo.length-1])&&sizePackTwo.includes(600))){
+					if((!bigFrames.includes(sizePackTwo[sizePackTwo.length-1])&&sizePackTwo.includes(600))){
 						if(prices[0][i]+(prices[1][j]-priceToRemove)<resultPrice) {
-							// resultBuild = sizePackOne.concat(sizePackTwo);
-							// resultBuild = this.removeOneShell(resultBuild, 600);
 							resultBuild[0] = sizePackOne;
 							resultBuild[1] = sizePackTwo;
-							resultBuild[1] = this.removeOneShell(resultBuild[1], 600);
+							resultBuild[1] = this.removeFrame(resultBuild[1], 600, 1);
 							resultPrice = prices[0][i]-priceToRemove+prices[1][j];
 						}
 					}
 				})
-			}else if ((!bigShells.includes(sizePackOne[sizePackOne.length-1])&&sizePackOne.includes(600))){
+			}else if ((!bigFrames.includes(sizePackOne[sizePackOne.length-1])&&sizePackOne.includes(600))){
 				allArrays[1].forEach((sizePackTwo, j) => {
-					if(bigShells.includes(sizePackTwo[sizePackTwo.length-1])){
+					if(bigFrames.includes(sizePackTwo[sizePackTwo.length-1])){
 						if((prices[0][i]-priceToRemove)+prices[1][j]<resultPrice) {
-							// resultBuild = sizePackOne.concat(sizePackTwo);
 							resultBuild[0] = sizePackOne;
-							resultBuild[0] = this.removeOneShell(resultBuild[0], 600);
+							resultBuild[0] = this.removeFrame(resultBuild[0], 600, 1);
 							resultBuild[1] = sizePackTwo;
 							resultPrice = prices[0][i]-priceToRemove+prices[1][j];
 						}
@@ -492,40 +499,127 @@ const summaryProgress = {
 				})
 			}
 		});
-
 		console.log("resultBuild: ", resultBuild);
 		console.log("resultPrice: ", resultPrice);
-	},
-
-		pickBuildThree(allArrays, prices){
-		// console.log("resultBuild: ", resultBuild);
-		// console.log("resultPrice: ", resultPrice);
-		console.log("Nope")
-	},
-
-	removeOneShell(array, size){
-		const index = array.indexOf(size);
-		if (index > -1) {
-  			array.splice(index, 1);
-  		}
-  		return array;
-	},
-
-	calcShells:{
-		
 	}
 
-	// renderResult(){
+	pickBuildThree(allArrays, prices){
+		const bigFrames = framesInfo.position.botttom.sizes.slice(6);
+		const priceToRemove = framesInfo.position.botttom.prices[framesInfo.position.botttom.sizes.indexOf(600)]
+		let resultBuild = [];
+		let preResultBuild = [];
+		let arrayOfAllVars = []
+		let count = 0
+		allArrays[0].forEach((sizePackOne,i) => {
+			if(!bigFrames.includes(sizePackOne[sizePackOne.length-2])){
+				allArrays[1].forEach((sizePackTwo,j) => {
+					allArrays[2].forEach((sizePackThree, k) => {
+						if(!bigFrames.includes(sizePackThree[sizePackThree.length-2])){
+							arrayOfAllVars[count] = []
+							arrayOfAllVars[count].push(sizePackOne)
+							arrayOfAllVars[count].push(sizePackTwo)
+							arrayOfAllVars[count].push(sizePackThree)
+							count++
+						}
+					})
+					
+				})
+			}
+		})
+		let mergedBuild = []
+		let filtredBuildVars = []
+		let filtredBuildVarTemp =[]
 
-	// }
+
+		//condition 1 1000 600 600 1000
+		arrayOfAllVars.forEach(buildArray => {
+			mergedBuild = buildArray[0].concat(buildArray[1]).concat(buildArray[2])
+			if((bigFrames.includes(buildArray[0][buildArray[0].length-1])) 
+				&& (this.checkForNumberOfFrames(buildArray[1], 600, 2)) 
+				&& (!bigFrames.includes(buildArray[1][buildArray[1].length-1]))
+				&& (bigFrames.includes(buildArray[2][buildArray[2].length-1])) 
+				&& (this.checkForNumberOfFrames(mergedBuild, 600, 3))){
+				filtredBuildVars.push(buildArray);
+			}
+
+		})
+
+		//condition 2 1000 600 1000 600
+		filtredBuildVarTemp = []
+		arrayOfAllVars.forEach(buildArray => {
+			mergedBuild = buildArray[0].concat(buildArray[1]).concat(buildArray[2])
+			if((bigFrames.includes(buildArray[0][buildArray[0].length-1])) 
+				&& (this.checkForNumberOfFrames(buildArray[1], 600, 1)) 
+				&& (bigFrames.includes(buildArray[1][buildArray[1].length-1]))
+				&& (this.checkForNumberOfFrames(buildArray[2], 600, 1)) 
+				&& (!bigFrames.includes(buildArray[2][buildArray[2].length-1])) 
+				&& (this.checkForNumberOfFrames(mergedBuild, 600, 3))){
+				filtredBuildVars.push(buildArray);
+			}
+
+		})
+
+		//condition 3 600 1000 600 1000
+		filtredBuildVarTemp = []
+		arrayOfAllVars.forEach(buildArray => {
+			mergedBuild = buildArray[0].concat(buildArray[1]).concat(buildArray[2])
+			if((!bigFrames.includes(buildArray[0][buildArray[0].length-1])) 
+				&& (this.checkForNumberOfFrames(buildArray[0], 600, 1)) 
+				&& (bigFrames.includes(buildArray[1][buildArray[1].length-1]))
+				&& (this.checkForNumberOfFrames(buildArray[1], 600, 1)) 
+				&& (bigFrames.includes(buildArray[2][buildArray[2].length-1])) 
+				&& (this.checkForNumberOfFrames(mergedBuild, 600, 3))){
+				filtredBuildVars.push(buildArray);
+			}
+
+		})
+
+		//condition 4 600 1000 1000 600
+		filtredBuildVarTemp = []
+		arrayOfAllVars.forEach(buildArray => {
+			mergedBuild = buildArray[0].concat(buildArray[1]).concat(buildArray[2])
+			if((!bigFrames.includes(buildArray[0][buildArray[0].length-1])) 
+				&& (this.checkForNumberOfFrames(buildArray[0], 600, 1)) 
+				&& (bigFrames.includes(buildArray[1][buildArray[1].length-2]))
+				&& (this.checkForNumberOfFrames(buildArray[2], 600, 1)) 
+				&& (!bigFrames.includes(buildArray[2][buildArray[2].length-1])) 
+				&& (this.checkForNumberOfFrames(mergedBuild, 600, 3))){
+				filtredBuildVars.push(buildArray);
+			}
+
+		})
+		// filtredBuildVars.flat(1)
+		console.log(filtredBuildVars);
+		console.log("Nope")
+	}
+
+	removeFrame(array, size, times){
+		let index
+		for (var i = 0; i < times; i++) {
+		index = array.indexOf(size);
+			if (index > -1) {
+	  			array.splice(index, 1);
+	  		}
+		}
+		const res = array
+  		return res;
+	}
+	
+	checkForNumberOfFrames(array, size, number){
+		return (array.reduce((r, e) => {if(e==size){return r+1}else {return r}},0)>=number)
+	}
 }
 
-function setBoxHeight(areaId, correctAreaHeight){
+
+function setBoxHeight(areaId, correctAreaHeight, minHight){
 	const area = document.getElementById(areaId);
 	const currentAreaHeight = document.getElementById(areaId).style.height;
 	if (currentAreaHeight != correctAreaHeight) {
 			area.style.height = correctAreaHeight;
 		}
+	if(minHight){
+		area.style.minHeight = minHight;
+	}
 }
 
 function onlyNumberKey(evt) { // Validation for size inputs (only numbers)

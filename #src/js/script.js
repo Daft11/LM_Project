@@ -346,23 +346,7 @@ const shapeBox = {
 }
 
 let framesInfo = fetch('http://localhost:3001/getFramesInfo').then(res => res.json()).then(res => {framesInfo = res})
-	// .then((res) => res.json())
- //    .then((resData) => {return resData})
-    // .catch(error => console.warn(error))
-// {
-// 	position: {
-// 		top: {
-// 			prices: [],
-// 			sizes: [150, 300, 400, 450, 600, 800],
-// 			lmCode:[82140031, 82140036, 82140037, 82140038, 82140011, 82140012]
-// 		},
-// 		botttom:{
-// 			prices: [1007, 1638, 2051, 1571, 2255, 2255, 2838, 2838, 2838],
-// 			sizes: [150, 300, 400, 450, 600, 800, 1000, 1050, 1200],
-// 			lmCode: [82140023, 82140024, 82140025, 82140026, 82140027, 82140028, 82140013, 82140013, 82140013]
-// 		}
-// 	}
-// }
+
 
 const summaryProgress = {
 	areaId: "calculating__area",
@@ -392,15 +376,50 @@ const summaryProgress = {
 		this.CalcFramesBottom = new CalcFrames(this.size, "bottom");
 		// this.CalcFramesTop = new CalcFrames(this.size, "top");
 	},
+
+	consShowFiltredBuilds(array){
+		console.log("filtredBuildVars: ", array)
+		console.log(this.calcPrice(array))
+	},
+
+	calcPrice(allArrays){
+		allArrays.forEach((currentArray, i) => {
+			let currentArrayPrices = [];
+			currentArray.forEach(sizePack => {
+				let price = sizePack.reduce((price, e) => { 
+					const index = framesInfo.position.botttom.sizes.indexOf(e);
+					price += framesInfo.position.botttom.prices[index];
+					return price;
+				}, 0)
+				currentArrayPrices.push(price)
+			})
+			currentArrayPrices = currentArrayPrices.reduce((r, e) => r + e)
+			this.resFramePriceArrayBottom.push(currentArrayPrices);
+		})
+		return this.resFramePriceArrayBottom;
+	},
+
+	pickCheapest(arrayFrames, arrayPrice){
+		let index = 0;
+		let price = this.resFramePriceArrayBottom.reduce((r, e, i)=>{
+			if(e<r){
+				index = i
+				return e
+			} else {return r}
+		}, Infinity)
+		return arrayPrice[index]
+	}
+
+
 }
 
 
 class CalcFrames{
 	constructor(sizeNoSort, position){
-		// this.size = sizeNoSort;
 		if(position === "bottom"){
 			this.resFramePriceArrayBottom = [];
 			this.resFrameSizeArrayBottom = [];
+			this.bigFrames = framesInfo.position.botttom.sizes.slice(6);//array of Frames for angle
 			this.calculateSizes(sizeNoSort);
 		}else if(position === "top"){
 			this.resFramePriceArrayTop = [];
@@ -412,8 +431,15 @@ class CalcFrames{
 	calculateSizes = (sizeNoSort) => {
 			// this.size = sizeNoSort.sort((a, b) => a - b);//sort sizes
 			this.size = sizeNoSort
-			this.size.forEach((e, i) => promRed(e-e%50,framesInfo.position.botttom.sizes).then(res => this.pusher(res, this.resFrameSizeArrayBottom)));
+
+			this.size.forEach((e, i) => promRed(this.fixkWallSize(e),framesInfo.position.botttom.sizes).then(res => this.pusher(res, this.resFrameSizeArrayBottom)));
 		}
+
+	fixkWallSize(size){
+		if(size >= 1100 && size < 1200){
+			return 1050
+		}else {return size-size%50}
+	}
 
 	pusher = (x, array) => {
 		array.push(x)
@@ -421,94 +447,82 @@ class CalcFrames{
 	}
 		
 	bigSizeReducer(allArrays){
-		const bigFrames = framesInfo.position.botttom.sizes.slice(6); //array of Frames for angle
 		allArrays.forEach((elem, index) => {
-			let res = elem.filter(e => {return !bigFrames.includes(e[e.length-3])});
-			if (allArrays.length == 3){res = res.filter(e =>{return e.includes(600)||!bigFrames.includes(e[e.length-3])})}
-			else if (allArrays.length == 2){res = res.filter(e =>{return e.includes(600)||!bigFrames.includes(e[e.length-2])})}
-			else if (allArrays.length == 1){res = res.filter(e =>{return !bigFrames.includes(e[e.length-1])})}
+			let res = elem.filter(e => {return !this.bigFrames.includes(e[e.length-3])});
+			if (allArrays.length == 3){res = res.filter(e => e.includes(600)||!this.isArrayInclBigSizeAt(e, e.length-3))}
+			else if (allArrays.length == 2){res = res.filter(e => e.includes(600)||!this.isArrayInclBigSizeAt(e, e.length-2))}
+			else if (allArrays.length == 1){res =  res.filter(e => !this.isArrayInclBigSizeAt(e, e.length-1))}
 			allArrays[index] = res;
 		});
-		this.calcPrice(allArrays);
+		this.pickCalculator(allArrays);
 	}
 
-	calcPrice = (allArrays) =>{
-		allArrays.forEach((currentArray, i) => {
-			let currentArrayPrices = [];
-			currentArray.forEach(sizePack => {
-				let price = sizePack.reduce((price, e) => { 
-					const index = framesInfo.position.botttom.sizes.indexOf(e);
-					price += framesInfo.position.botttom.prices[index];
-					return price;
-				}, 0)
-				currentArrayPrices.push(price)
-			})
-			this.resFramePriceArrayBottom.push(currentArrayPrices);
-		})
-		this.pickCalculator(allArrays, this.resFramePriceArrayBottom);
-		return this.resFramePriceArrayBottom;
-	}
-
-	pickCalculator(allArrays, prices){
-		console.log(allArrays)
-		if(allArrays.length === 1){this.pickBuildOne(allArrays, prices)}
-		else if(allArrays.length === 2){this.pickBuildTwo(allArrays, prices)}
-		else if(allArrays.length === 3){this.pickBuildThree(allArrays, prices)}
+	pickCalculator(allArrays){
+		// console.log(allArrays)
+		if(allArrays.length === 1){this.filterBuildsOne(allArrays)}
+		else if(allArrays.length === 2){this.filterBuildsTwo(allArrays)}
+		else if(allArrays.length === 3){this.filterBuildsThree(allArrays)}
 	}
 		
-	pickBuildOne(allArrays, prices){
-		let resultBuild = [];
-		let resultPrice = Infinity;
-		allArrays[0].forEach((sizePackOne,i) => {
-			if((prices[0][i]<resultPrice)&&(sizePackOne.includes(600))){
-			resultBuild[0] = sizePackOne;
-			resultPrice = prices[0][i];
-			}
+	filterBuildsOne(allArrays){
+		let filtredBuildVars = [];
+		let res = [];
+		allArrays[0].forEach((sizePack,i) => {
+			let filtredSizePack = sizePack.filter(e =>{return sizePack.includes(600)})
+			if(filtredSizePack.length > 0) res.push(filtredSizePack)
 		});
-		console.log("resultBuild: ", resultBuild);
-		console.log("resultPrice: ", resultPrice);
+		filtredBuildVars[0] = res
+		summaryProgress.consShowFiltredBuilds(filtredBuildVars)
+
 	}
 
-	pickBuildTwo(allArrays, prices){
-		const bigFrames = framesInfo.position.botttom.sizes.slice(6);
-		let resultBuild = [];
-		let resultPrice = Infinity;
-		let priceToRemove = framesInfo.position.botttom.prices[framesInfo.position.botttom.sizes.indexOf(600)]
+
+	filterBuildsTwo(allArrays){
+		const priceToRemove = framesInfo.position.botttom.prices[framesInfo.position.botttom.sizes.indexOf(600)];
+		let arrayOfAllVars = [];
+		let count = 0;
 		allArrays[0].forEach((sizePackOne,i) => {
-				if(bigFrames.includes(sizePackOne[sizePackOne.length-1])){
+			if(!this.isArrayInclBigSizeAt(sizePackOne, sizePackOne.length-2)){
 				allArrays[1].forEach((sizePackTwo, j) => {
-					if((!bigFrames.includes(sizePackTwo[sizePackTwo.length-1])&&sizePackTwo.includes(600))){
-						if(prices[0][i]+(prices[1][j]-priceToRemove)<resultPrice) {
-							resultBuild[0] = sizePackOne;
-							resultBuild[1] = sizePackTwo;
-							resultBuild[1] = this.removeFrame(resultBuild[1], 600, 1);
-							resultPrice = prices[0][i]-priceToRemove+prices[1][j];
-						}
-					}
-				})
-			}else if ((!bigFrames.includes(sizePackOne[sizePackOne.length-1])&&sizePackOne.includes(600))){
-				allArrays[1].forEach((sizePackTwo, j) => {
-					if(bigFrames.includes(sizePackTwo[sizePackTwo.length-1])){
-						if((prices[0][i]-priceToRemove)+prices[1][j]<resultPrice) {
-							resultBuild[0] = sizePackOne;
-							resultBuild[0] = this.removeFrame(resultBuild[0], 600, 1);
-							resultBuild[1] = sizePackTwo;
-							resultPrice = prices[0][i]-priceToRemove+prices[1][j];
-						}
+					if(!this.isArrayInclBigSizeAt(sizePackTwo, sizePackTwo.length-2)){
+						arrayOfAllVars[count] = []
+						arrayOfAllVars[count].push(sizePackOne)
+						arrayOfAllVars[count].push(sizePackTwo)
+						count++
 					}
 				})
 			}
-		});
-		console.log("resultBuild: ", resultBuild);
-		console.log("resultPrice: ", resultPrice);
+		})
+		let mergedBuild = [];
+		let filtredBuildVars = [];
+
+		//condition 1 600 1000
+		arrayOfAllVars.forEach(buildArray => {
+			mergedBuild = buildArray[0].concat(buildArray[1])
+			if(!this.isArrayInclBigSizeAt(buildArray[0], buildArray[0].length-1)
+				&& buildArray[0].includes(600)
+				&& this.isArrayInclBigSizeAt(buildArray[1], buildArray[1].length-1)
+				&& this.checkForNumberOfFrames(mergedBuild, 600, 2))
+				filtredBuildVars.push(buildArray)
+		})
+
+		//condition 1 1000 600
+		arrayOfAllVars.forEach(buildArray => {
+			mergedBuild = buildArray[0].concat(buildArray[1])
+			if(this.isArrayInclBigSizeAt(buildArray[0], buildArray[0].length-1) 
+				&& buildArray[1].includes(600) 
+				&& !this.isArrayInclBigSizeAt(buildArray[1], buildArray[1].length-1)
+				&& (this.checkForNumberOfFrames(mergedBuild, 600, 2)))
+				filtredBuildVars.push(buildArray)
+		})
+		filtredBuildVars = this.fixExcessFrames(filtredBuildVars, 2)
+		summaryProgress.consShowFiltredBuilds(filtredBuildVars)
 	}
 
-	pickBuildThree(allArrays, prices){
+	filterBuildsThree(allArrays, prices){
 		const bigFrames = framesInfo.position.botttom.sizes.slice(6);
 		const priceToRemove = framesInfo.position.botttom.prices[framesInfo.position.botttom.sizes.indexOf(600)]
-		let resultBuild = [];
-		let preResultBuild = [];
-		let arrayOfAllVars = []
+		let arrayOfAllVars = [];
 		let count = 0
 		allArrays[0].forEach((sizePackOne,i) => {
 			if(!bigFrames.includes(sizePackOne[sizePackOne.length-2])){
@@ -528,7 +542,6 @@ class CalcFrames{
 		})
 		let mergedBuild = []
 		let filtredBuildVars = []
-		let filtredBuildVarTemp =[]
 
 
 		//condition 1 1000 600 600 1000
@@ -538,14 +551,11 @@ class CalcFrames{
 				&& (this.checkForNumberOfFrames(buildArray[1], 600, 2)) 
 				&& (!bigFrames.includes(buildArray[1][buildArray[1].length-1]))
 				&& (bigFrames.includes(buildArray[2][buildArray[2].length-1])) 
-				&& (this.checkForNumberOfFrames(mergedBuild, 600, 3))){
+				&& (this.checkForNumberOfFrames(mergedBuild, 600, 3)))
 				filtredBuildVars.push(buildArray);
-			}
-
 		})
 
 		//condition 2 1000 600 1000 600
-		filtredBuildVarTemp = []
 		arrayOfAllVars.forEach(buildArray => {
 			mergedBuild = buildArray[0].concat(buildArray[1]).concat(buildArray[2])
 			if((bigFrames.includes(buildArray[0][buildArray[0].length-1])) 
@@ -553,14 +563,11 @@ class CalcFrames{
 				&& (bigFrames.includes(buildArray[1][buildArray[1].length-1]))
 				&& (this.checkForNumberOfFrames(buildArray[2], 600, 1)) 
 				&& (!bigFrames.includes(buildArray[2][buildArray[2].length-1])) 
-				&& (this.checkForNumberOfFrames(mergedBuild, 600, 3))){
+				&& (this.checkForNumberOfFrames(mergedBuild, 600, 3)))
 				filtredBuildVars.push(buildArray);
-			}
-
 		})
 
 		//condition 3 600 1000 600 1000
-		filtredBuildVarTemp = []
 		arrayOfAllVars.forEach(buildArray => {
 			mergedBuild = buildArray[0].concat(buildArray[1]).concat(buildArray[2])
 			if((!bigFrames.includes(buildArray[0][buildArray[0].length-1])) 
@@ -568,14 +575,11 @@ class CalcFrames{
 				&& (bigFrames.includes(buildArray[1][buildArray[1].length-1]))
 				&& (this.checkForNumberOfFrames(buildArray[1], 600, 1)) 
 				&& (bigFrames.includes(buildArray[2][buildArray[2].length-1])) 
-				&& (this.checkForNumberOfFrames(mergedBuild, 600, 3))){
+				&& (this.checkForNumberOfFrames(mergedBuild, 600, 3)))
 				filtredBuildVars.push(buildArray);
-			}
-
 		})
 
 		//condition 4 600 1000 1000 600
-		filtredBuildVarTemp = []
 		arrayOfAllVars.forEach(buildArray => {
 			mergedBuild = buildArray[0].concat(buildArray[1]).concat(buildArray[2])
 			if((!bigFrames.includes(buildArray[0][buildArray[0].length-1])) 
@@ -583,28 +587,57 @@ class CalcFrames{
 				&& (bigFrames.includes(buildArray[1][buildArray[1].length-2]))
 				&& (this.checkForNumberOfFrames(buildArray[2], 600, 1)) 
 				&& (!bigFrames.includes(buildArray[2][buildArray[2].length-1])) 
-				&& (this.checkForNumberOfFrames(mergedBuild, 600, 3))){
+				&& (this.checkForNumberOfFrames(mergedBuild, 600, 3)))
 				filtredBuildVars.push(buildArray);
-			}
-
 		})
 		// filtredBuildVars.flat(1)
-		console.log(filtredBuildVars);
-		console.log("Nope")
+		filtredBuildVars = this.fixExcessFrames(filtredBuildVars, 3)
+		summaryProgress.consShowFiltredBuilds(filtredBuildVars)
 	}
 
-	removeFrame(array, size, times){
-		let index
-		for (var i = 0; i < times; i++) {
-		index = array.indexOf(size);
-			if (index > -1) {
-	  			array.splice(index, 1);
-	  		}
+	fixExcessFrames(array, wallsNumber){
+		if(wallsNumber === 2){
+			array = array.map(build => {
+				build = build.map(wall => {
+					if(!this.isArrayInclBigSizeAt(wall, wall.length-1)){
+						return this.removeFrame(wall, 600, 1)
+					}else {return wall}
+				})
+				return build
+			})
+		}else if (wallsNumber === 3){
+			array = array.map(build => {
+				build = build.map((wall, i) => {
+					if((i==0 || i==2) && !this.isArrayInclBigSizeAt(wall, wall.length-1)){
+						return this.removeFrame(wall, 600, 1)
+					}else if(i==1) {
+						if(!this.isArrayInclBigSizeAt(wall, wall.length-1)){
+							return this.removeFrame(wall, 600, 2)
+						}
+						if(!this.isArrayInclBigSizeAt(wall, wall.length-2) && this.isArrayInclBigSizeAt(wall, wall.length-1)){
+							return this.removeFrame(wall, 600, 1)
+						} else {return wall}
+					}else {return wall}
+				})
+				return build
+			})
 		}
-		const res = array
-  		return res;
+		return array
 	}
-	
+
+	removeFrame(array, size, number){
+		let count =	array.reduce((acc, cur) => {if(cur==size){return acc+1}else {return acc}},0);
+		array = array.filter(cur => cur!=size);
+		for (var i = 0; i <(count-number) ; i++) {
+			array.push(size)
+		}
+		return array
+	}
+
+	isArrayInclBigSizeAt(array, position){
+		return this.bigFrames.includes(array[position])
+	}
+
 	checkForNumberOfFrames(array, size, number){
 		return (array.reduce((r, e) => {if(e==size){return r+1}else {return r}},0)>=number)
 	}
